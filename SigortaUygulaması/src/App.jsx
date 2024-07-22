@@ -13,7 +13,6 @@ import AddCustomer from "./components/AddCustomer/AddCustomer";
 // müşteri ekle -> backend
 // staj defteri
 
-
 function App() {
   return (
     <Router>
