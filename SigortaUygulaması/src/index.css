@@ -1,0 +1,33 @@
+* {
+  box-sizing: border-box;
+  font-family: "Montserrat Alternates", sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  /* background-color: #3a86ff; */
+  background-color: #c77dff;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  background-color: #9d4edd;
+  color: #fff;
+  padding: 14px 20px;
+  margin: 15px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 10px;
+  font-size: 1.1em;
+  text-transform: uppercase;
+}

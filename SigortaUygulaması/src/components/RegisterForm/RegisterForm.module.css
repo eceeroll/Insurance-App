@@ -1,0 +1,126 @@
+/* RegisterForm.module.css */
+.container {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  width: 475px;
+  border: none;
+  padding: 14px;
+  border-radius: 0.5em;
+  box-shadow: 5px 7px 12px rgba(0, 0, 0, 0.121);
+  box-sizing: border-box;
+}
+
+.title {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.sub-container {
+  padding: 4px 6px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputGroup label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.inputGroup input {
+  width: calc(100% - 20px); /* Adjust width of inputs, considering padding */
+  padding: 7px; /* Add padding to inputs */
+  border: 1px solid #ccc; /* Add border for clarity */
+  border-radius: 6px; /* Optional: add border-radius */
+}
+
+.errorText {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.errorInput {
+  border: 1px solid red;
+  background-color: #ff9696;
+}
+
+.direct {
+  margin-top: 10px;
+}
+
+.direct span {
+  margin-top: 0px;
+  font-size: 14px;
+  color: #555;
+}
+
+.successMessage {
+  text-align: center;
+  padding: 20px;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.successMessage h2 {
+  color: #1f4ce0;
+  margin-bottom: 10px;
+}
+
+.successMessage p {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.successMessage button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.successMessage button:hover {
+  background-color: #0a68a7;
+}
+
+/* General styles */
+input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  box-shadow: 5px 3px 6px gray;
+}
+
+button {
+  /* background-color: #4361ee; */
+  background-color: #c77dff;
+  color: white;
+  padding: 14px 20px;
+  margin: 15px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 10px;
+  font-size: 1.1em;
+  text-transform: uppercase;
+}
+
+button:hover {
+  opacity: 0.8;
+  border-radius: 10px;
+}
+
+/* Ensure that form and its elements get the correct styles */
+form {
+  line-height: 1em;
+}

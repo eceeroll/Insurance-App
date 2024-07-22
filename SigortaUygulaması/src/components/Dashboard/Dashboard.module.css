@@ -1,0 +1,46 @@
+.dashboard {
+  padding: 20px;
+}
+
+.logoutButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  width: 14%;
+  color: rgb(84, 8, 98);
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 10; /* Ensure the button is on top of other elements */
+}
+
+.logoutButton:hover {
+  background-color: #e2e6ea;
+}
+
+.menu {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 50px;
+}
+
+.menu button {
+  background-color: #f8f9fa;
+  color: rgb(81, 8, 81);
+  border: 1px solid #dee2e6;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.menu button:hover {
+  background-color: #e2e6ea;
+}

@@ -1,0 +1,13 @@
+.logo-container {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background-color: transparent; /* Arka plan transparan */
+  padding: 20px;
+  z-index: 1000;
+}
+
+.logo {
+  height: 70px; /* Logonun boyutunu ayarlayın */
+  display: block;
+}

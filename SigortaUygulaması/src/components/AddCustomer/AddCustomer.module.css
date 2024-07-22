@@ -1,0 +1,53 @@
+.container {
+  position: relative;
+  padding: 20px; /* Add padding around the container */
+}
+
+.backButton {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  color: black;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 10;
+  width: 30%;
+}
+
+.backButton:hover {
+  background-color: #e2e6ea;
+}
+
+.addCustomerForm {
+  margin-top: 50px; /* Ensure there's enough space for the button */
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap; /* Allows the form groups to wrap to the next line if necessary */
+  gap: 20px; /* Space between form groups */
+}
+
+.form-group {
+  flex: 1;
+  min-width: 200px; /* Prevents form groups from becoming too small */
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
