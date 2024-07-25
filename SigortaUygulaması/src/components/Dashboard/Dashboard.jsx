@@ -12,6 +12,7 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     if (window.confirm("Emin misiniz?")) {
+      localStorage.removeItem("token");
       navigate("/login");
     }
   };

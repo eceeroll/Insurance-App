@@ -37,12 +37,14 @@
   min-width: 200px; /* Prevents form groups from becoming too small */
 }
 
-input {
+input,
+select {
   width: 100%;
   padding: 8px;
   margin-top: 4px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  margin-bottom: 0.5rem;
 }
 
 .error {

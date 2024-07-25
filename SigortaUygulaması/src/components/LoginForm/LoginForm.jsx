@@ -28,11 +28,12 @@ export default function LoginForm() {
 
       try {
         const response = await axios.post(
-          "http://localhost:5000/login",
+          "http://localhost:5000/api/login",
           values
         );
         if (response.status === 200) {
-          const { firstName, lastName, role } = response.data;
+          const { token, firstName, lastName, role } = response.data;
+          localStorage.setItem("token", token);
 
           if (role === "admin") {
             navigate("/admin", { state: { firstName, lastName } });
@@ -41,9 +42,10 @@ export default function LoginForm() {
           }
         }
       } catch (error) {
+        console.error("Login error:", error.response);
+
         setErrorMessage(error.response?.data || "Bir hata oluştu.");
         setShowAlert(true);
-
         setTimeout(() => {
           setShowAlert(false);
         }, 5000);
@@ -120,7 +122,6 @@ export default function LoginForm() {
           </button>
         </form>
       </div>
-
       <div className={styles.direct}>
         <span>Üye değil misiniz? </span>
         <Link to="/register">Hemen kaydolun</Link>

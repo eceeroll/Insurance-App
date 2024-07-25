@@ -1,0 +1,15 @@
+// Kullanıcı modeli
+
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+const UserSchema = new Schema({
+  firstName: String,
+  lastName: String,
+  username: String,
+  password: String,
+  email: String,
+  role: String,
+});
+
+module.exports = mongoose.model("User", UserSchema);

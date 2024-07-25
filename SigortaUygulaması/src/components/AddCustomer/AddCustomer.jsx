@@ -1,7 +1,9 @@
 import { useFormik } from "formik";
+import { useState } from "react";
 import * as Yup from "yup";
 import styles from "./AddCustomer.module.css";
 import { useNavigate } from "react-router-dom";
+import data from "../../il-ilceler-data.json";
 
 const AddCustomerSchema = Yup.object({
   tc_no: Yup.string()
@@ -43,6 +45,40 @@ export default function AddCustomer() {
 
   const navigate = useNavigate();
 
+  // il bilgileri
+  const provinces = data.data.map((province) => ({
+    value: province.il_adi,
+    label: province.il_adi,
+  }));
+
+  // ilçe bilgileri
+  const districts = data.data.flatMap((province) =>
+    province.ilceler.map((district) => ({
+      value: district.ilce_adi,
+      label: district.ilce_adi,
+      province: province.il_adi,
+    }))
+  );
+
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [filteredDistricts, setFilteredDistricts] = useState([]);
+
+  const handleProvinceChange = (e) => {
+    const province = e.target.value;
+    setSelectedProvince(province);
+    setFilteredDistricts(
+      districts.filter((district) => district.province === province)
+    );
+    formik.setFieldValue("province", province);
+    // şehir değişince ilçe sıfırlanır
+    formik.setFieldValue("district", "");
+  };
+
+  const handleDistrictChange = (e) => {
+    const district = e.target.value;
+    formik.setFieldValue("district", district);
+  };
+
   return (
     <div className={styles.container}>
       <button
@@ -58,6 +94,7 @@ export default function AddCustomer() {
             <label htmlFor="tc_no">TC Kimlik Numarası</label>
             <input
               id="tc_no"
+              maxLength={11}
               name="tc_no"
               type="text"
               onChange={formik.handleChange}
@@ -120,14 +157,19 @@ export default function AddCustomer() {
         <div className={styles["form-row"]}>
           <div className={styles["form-group"]}>
             <label htmlFor="province">İl</label>
-            <input
+            <select
               id="province"
               name="province"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              onChange={handleProvinceChange}
               value={formik.values.province}
-            />
+            >
+              <option value="">İl Seçiniz</option>
+              {provinces.map((province) => (
+                <option key={province.value} value={province.value}>
+                  {province.label}
+                </option>
+              ))}
+            </select>
             {formik.touched.province && formik.errors.province ? (
               <div className={styles.error}>{formik.errors.province}</div>
             ) : null}
@@ -135,14 +177,20 @@ export default function AddCustomer() {
 
           <div className={styles["form-group"]}>
             <label htmlFor="district">İlçe</label>
-            <input
+            <select
               id="district"
               name="district"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              onChange={handleDistrictChange}
               value={formik.values.district}
-            />
+              disabled={!selectedProvince}
+            >
+              <option value="">İlçe Seçiniz</option>
+              {filteredDistricts.map((district) => (
+                <option key={district.value} value={district.value}>
+                  {district.label}
+                </option>
+              ))}
+            </select>
             {formik.touched.district && formik.errors.district ? (
               <div className={styles.error}>{formik.errors.district}</div>
             ) : null}
@@ -156,6 +204,7 @@ export default function AddCustomer() {
               id="phone_number"
               name="phone_number"
               type="text"
+              maxLength={10}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.phone_number}
