@@ -1,5 +1,11 @@
 .dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center contents horizontally */
+  justify-content: center; /* Center contents vertically */
+  min-height: 100vh; /* Make sure the container covers the full viewport height */
   padding: 20px;
+  position: relative; /* Ensure absolute positioned elements are placed correctly */
 }
 
 .logoutButton {
@@ -26,10 +32,9 @@
   gap: 10px;
   margin-bottom: 20px;
   position: absolute;
-  top: 0;
+  top: 50px; /* Adjust this value to position the menu as needed */
   left: 50%;
   transform: translateX(-50%);
-  margin-top: 50px;
 }
 
 .menu button {
@@ -43,4 +48,11 @@
 
 .menu button:hover {
   background-color: #e2e6ea;
+}
+
+.welcomeMessage {
+  font-size: 2em;
+  color: #333;
+  text-align: center;
+  margin-top: 100px; /* Adjust this value to move the text down as needed */
 }

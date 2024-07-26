@@ -23,7 +23,7 @@ export default function ForgotPassword() {
     onSubmit: async (values) => {
       try {
         const response = await axios.post(
-          "http://localhost:5000/forgotPassword",
+          "http://localhost:5000/api/forgotPassword",
           values
         );
         console.log("Password reset link sent:", response.data);
@@ -75,7 +75,9 @@ export default function ForgotPassword() {
           ) : null}
         </div>
 
-        <button type="submit">Şifre Sıfırlama Linki Gönder</button>
+        <button className="forgotButton" type="submit">
+          Şifre Sıfırlama Linki Gönder
+        </button>
 
         <div className="mt-3">
           <Link to="/login" className="btn btn-secondary">

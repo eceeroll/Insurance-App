@@ -1,0 +1,148 @@
+/* Container'ı ortalamak için flexbox kullanımı */
+.container {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  width: 575px;
+  border: none;
+  padding: 20px;
+  border-radius: 1em; /* Köşe yuvarlaklığı arttırıldı */
+  box-shadow: 5px 7px 12px rgba(0, 0, 0, 0.121);
+  box-sizing: border-box;
+  margin: auto;
+  height: auto; /* Yüksekliği otomatik ayarla */
+  align-items: center; /* Container'ı yatayda ortalar */
+  justify-content: center; /* Container'ı dikeyde ortalar */
+  position: relative;
+}
+
+.title {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.sub-container {
+  padding: 3px;
+  width: 415px; /* Maksimum genişlik */
+}
+
+/* Input grupları için */
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5rem; /* Input grupları arasında boşluk */
+}
+
+.inputGroup label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.inputGroup input {
+  width: 100%; /* Input'ların genişliği %100 */
+  padding: 6px 10px; /* Padding arttırıldı */
+  border: 1px solid #ccc; /* Kenar rengi ayarlandı */
+  border-radius: 6px; /* Köşe yuvarlaklığı ayarlandı */
+  box-shadow: 5px 3px 6px gray; /* Gölgeler ayarlandı */
+  box-sizing: border-box; /* İçerik alanını sınırla */
+}
+
+/* Hata metinleri */
+.errorText {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+/* Hatalı inputlar için */
+.errorInput {
+  border: 1px solid red;
+  background-color: #ff9696;
+}
+
+/* Başarı mesajı */
+.successMessage {
+  text-align: center;
+  padding: 20px;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.successMessage h2 {
+  color: #1f4ce0;
+  margin-bottom: 10px;
+}
+
+.successMessage p {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.successMessage button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.successMessage button:hover {
+  background-color: #0a68a7;
+}
+
+/* Buton stilleri */
+button {
+  background-color: #c77dff;
+  color: white;
+  padding: 14px 20px;
+  margin: 15px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 10px;
+  font-size: 1.1em;
+  text-transform: uppercase;
+}
+
+button:hover {
+  opacity: 0.8;
+  border-radius: 10px;
+}
+
+/* Genel form stili */
+form {
+  line-height: 1.5em; /* Satır yüksekliği ayarlandı */
+}
+
+/* Link stili */
+.direct {
+  margin-top: 10px;
+  text-align: center; /* Linklerin ortalanması */
+}
+
+/* .direct span {
+  margin-top: 0;
+  font-size: 14px;
+  color: #555;
+} */
+
+.direct {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  text-align: right; /* Sağ tarafa hizala */
+  font-size: 16px;
+  color: #555;
+}
+
+.direct a {
+  color: #c77dff; /* Link rengini ayarla */
+}
+
+.direct a:hover {
+  text-decoration: underline; /* Üzerine gelince altı çizili */
+}

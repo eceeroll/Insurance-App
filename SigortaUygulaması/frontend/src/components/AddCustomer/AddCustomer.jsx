@@ -1,9 +1,11 @@
 import { useFormik } from "formik";
 import { useState } from "react";
+import axios from "axios";
 import * as Yup from "yup";
-import styles from "./AddCustomer.module.css";
 import { useNavigate } from "react-router-dom";
 import data from "../../il-ilceler-data.json";
+import "bootstrap/dist/css/bootstrap.min.css";
+import styles from "./AddCustomer.module.css";
 
 const AddCustomerSchema = Yup.object({
   tc_no: Yup.string()
@@ -38,12 +40,41 @@ export default function AddCustomer() {
       email: "",
     },
     validationSchema: AddCustomerSchema,
-    onSubmit: (values) => {
-      console.log(values);
-    },
+    onSubmit: (values) => handleSubmit(values),
   });
 
   const navigate = useNavigate();
+
+  const handleSubmit = async (values) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:5000/api/customers/yeni-musteri",
+        values,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        alert("Müşteri başarıyla eklendi!");
+        navigate("/dashboard");
+      } else {
+        alert("Müşteri eklenirken bir hata oluştu!");
+      }
+    } catch (error) {
+      console.error(error);
+      if (error.response && error.response.status === 400) {
+        const errorMessage =
+          error.response.data.message || "Lütfen bütün alanları doldurunuz!";
+        alert(errorMessage);
+      } else {
+        alert("Bir hata oluştu!");
+      }
+    }
+  };
 
   // il bilgileri
   const provinces = data.data.map((province) => ({
@@ -70,7 +101,6 @@ export default function AddCustomer() {
       districts.filter((district) => district.province === province)
     );
     formik.setFieldValue("province", province);
-    // şehir değişince ilçe sıfırlanır
     formik.setFieldValue("district", "");
   };
 

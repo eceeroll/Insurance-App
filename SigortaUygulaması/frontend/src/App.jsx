@@ -7,6 +7,7 @@ import AdminPanel from "./components/AdminPanel/AdminPanel";
 import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
 import AddCustomer from "./components/AddCustomer/AddCustomer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SearchCustomer from "./components/SearchCustomer/SearchCustomer";
 
 function App() {
   return (
@@ -36,6 +37,14 @@ function App() {
             }
           />
         </Route>
+        <Route
+          path="/musteri-ara"
+          element={
+            <ProtectedRoute>
+              <SearchCustomer />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

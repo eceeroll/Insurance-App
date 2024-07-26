@@ -1,22 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&display=swap");
+
 * {
   box-sizing: border-box;
   font-family: "Montserrat Alternates", sans-serif;
 }
-
+/* 
 body {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   height: 100vh;
-  /* background-color: #3a86ff; */
+  
   background-color: #c77dff;
-}
+} */
+/* background-color: #3a86ff;  */
 
 body,
 html {
   margin: 0;
   padding: 0;
+  background-color: #c77dff;
 }
 
 button {

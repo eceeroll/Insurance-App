@@ -1,0 +1,75 @@
+.container {
+  position: relative;
+  padding: 20px;
+  max-width: 700px; /* Set a max-width for the container to center it */
+  margin: 0 auto; /* Center the container horizontally */
+}
+
+.backButton {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  color: black;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 30;
+  width: 120px; /* Set a fixed width for the button */
+}
+
+.backButton:hover {
+  background-color: #e2e6ea;
+}
+
+.addCustomerForm {
+  margin-top: 50px; /* Ensure there's enough space for the button */
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Create a two-column layout */
+  gap: 15px; /* Space between columns */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
+
+button[type="submit"] {
+  padding: 10px 20px;
+
+  background-color: #6f42c1; /* Dark purple color */
+  color: white;
+  border: none;
+  width: 100%; /* Slightly reduced width */
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+button[type="submit"]:hover {
+  background-color: #5a32a3; /* Slightly darker purple on hover */
+}

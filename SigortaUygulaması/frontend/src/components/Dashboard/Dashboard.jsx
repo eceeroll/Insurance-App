@@ -1,10 +1,25 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./Dashboard.module.css";
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { firstName, lastName } = location.state || {};
+  const [user, setUser] = useState({ firstName: "", lastName: "" });
+
+  useEffect(() => {
+    const firstName =
+      location.state?.firstName || localStorage.getItem("firstName");
+    const lastName =
+      location.state?.lastName || localStorage.getItem("lastName");
+
+    if (firstName && lastName) {
+      setUser({
+        firstName,
+        lastName,
+      });
+    }
+  }, [location]);
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -13,6 +28,8 @@ export default function Dashboard() {
   const handleLogout = () => {
     if (window.confirm("Emin misiniz?")) {
       localStorage.removeItem("token");
+      localStorage.removeItem("firstName");
+      localStorage.removeItem("lastName");
       navigate("/login");
     }
   };
@@ -36,8 +53,8 @@ export default function Dashboard() {
           Poliçe Ara
         </button>
       </div>
-      <h1>
-        Hoşgeldiniz {firstName} {lastName}
+      <h1 className={styles.welcomeMessage}>
+        Hoşgeldiniz {user.firstName} {user.lastName}
       </h1>
     </div>
   );

@@ -34,6 +34,8 @@ export default function LoginForm() {
         if (response.status === 200) {
           const { token, firstName, lastName, role } = response.data;
           localStorage.setItem("token", token);
+          localStorage.setItem("firstName", firstName);
+          localStorage.setItem("lastName", lastName);
 
           if (role === "admin") {
             navigate("/admin", { state: { firstName, lastName } });

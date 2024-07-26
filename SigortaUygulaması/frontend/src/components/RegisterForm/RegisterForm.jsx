@@ -40,14 +40,17 @@ export default function RegisterForm() {
     validationSchema: RegisterSchema,
     onSubmit: async (values) => {
       try {
-        const response = await axios.post("http://localhost:5000/register", {
-          firstName: values.name,
-          lastName: values.surname,
-          username: values.username,
-          password: values.password,
-          email: values.email,
-          role: "user",
-        });
+        const response = await axios.post(
+          "http://localhost:5000/api/register",
+          {
+            firstName: values.name,
+            lastName: values.surname,
+            username: values.username,
+            password: values.password,
+            email: values.email,
+            role: "user",
+          }
+        );
         if (response.status === 200) {
           setIsRegistered(true);
         }
