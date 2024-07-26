@@ -9,18 +9,17 @@
 }
 
 .logoutButton {
+  z-index: 10;
   position: absolute;
   top: 10px;
   right: 10px;
-  padding: 4px 10px;
-  width: 14%;
-  color: rgb(84, 8, 98);
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
+  padding: 4px 11px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
-  z-index: 10; /* Ensure the button is on top of other elements */
+  width: 170px;
 }
 
 .logoutButton:hover {
@@ -32,15 +31,15 @@
   gap: 10px;
   margin-bottom: 20px;
   position: absolute;
-  top: 50px; /* Adjust this value to position the menu as needed */
+  top: 50px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .menu button {
-  background-color: #f8f9fa;
-  color: rgb(81, 8, 81);
-  border: 1px solid #dee2e6;
+  background-color: #7f298f;
+  color: rgb(255, 255, 255);
+  border: 1px solid #be36bcb3;
   padding: 10px 20px;
   cursor: pointer;
   transition: background-color 0.3s;

@@ -8,6 +8,7 @@ import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
 import AddCustomer from "./components/AddCustomer/AddCustomer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SearchCustomer from "./components/SearchCustomer/SearchCustomer";
+import ManageUsers from "./components/AdminPanel/ManageUsers";
 
 function App() {
   return (
@@ -42,6 +43,14 @@ function App() {
           element={
             <ProtectedRoute>
               <SearchCustomer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/kullanicilar"
+          element={
+            <ProtectedRoute>
+              <ManageUsers />
             </ProtectedRoute>
           }
         />

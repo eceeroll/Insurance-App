@@ -26,9 +26,13 @@ exports.login = (req, res, next) => {
       });
       console.log("Login successful with user:", user);
 
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
+      const token = jwt.sign(
+        { id: user._id, role: user.role, username: user.username },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1h",
+        }
+      );
 
       return res.json({
         message: "Giriş başarılı!",

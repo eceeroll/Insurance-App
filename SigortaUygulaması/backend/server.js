@@ -4,9 +4,10 @@ const express = require("express");
 const session = require("express-session");
 const passport = require("./config/passport");
 const mongoose = require("mongoose");
-const authMiddleware = require("./middlewares/authMiddleware");
 const authRoutes = require("./routes/authRoutes");
 const customerRoutes = require("./routes/customerRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const isAuthenticated = require("./middlewares/authMiddleware");
 
 const PORT = 5000;
 
@@ -37,9 +38,10 @@ mongoose.connect("mongodb://127.0.0.1:27017/my-auth-db", {
 
 app.use("/api", authRoutes); // Prefix routes with '/api'
 app.use("/api/customers", customerRoutes);
+app.use("/admin", adminRoutes);
 
 // Korunan dashboard route'u
-app.get("/dashboard", authMiddleware, (req, res) => {
+app.get("/dashboard", isAuthenticated, (req, res) => {
   res.send("Dashboard Page");
 });
 

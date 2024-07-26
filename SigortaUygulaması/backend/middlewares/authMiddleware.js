@@ -11,7 +11,7 @@
 
 const jwt = require("jsonwebtoken");
 
-const authMiddleware = (req, res, next) => {
+const isAuthenticated = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -31,4 +31,4 @@ const authMiddleware = (req, res, next) => {
   });
 };
 
-module.exports = authMiddleware;
+module.exports = isAuthenticated;

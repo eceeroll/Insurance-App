@@ -1,5 +1,6 @@
 const Customer = require("../models/Customer");
 
+// USER / ADD CUSTOMER
 exports.addCustomer = async (req, res) => {
   try {
     const {
@@ -28,7 +29,11 @@ exports.addCustomer = async (req, res) => {
       district,
       phone_number,
       email,
-      addedBy: req.user.id || null,
+      addedBy:
+        {
+          id: req.user.id,
+          username: req.user.username,
+        } || null,
     });
 
     await newCustomer.save();
@@ -42,11 +47,14 @@ exports.addCustomer = async (req, res) => {
   }
 };
 
+// USER / SEARCH CUSTOMERS
 exports.searchCustomers = async (req, res) => {
   const { first_name, last_name, tc_no } = req.query;
 
   // mongodb sorgusu için nesne oluşturulur
-  const query = { addedBy: req.user.id };
+  const query = {
+    "addedBy.id": req.user.id, // addedBy içindeki id'yi sorguluyoruz
+  };
 
   if (tc_no) {
     query.tc_no = new RegExp(tc_no, "i");
@@ -66,3 +74,5 @@ exports.searchCustomers = async (req, res) => {
   const customers = await Customer.find(query);
   res.json(customers);
 };
+
+
