@@ -95,7 +95,6 @@
 }
 .table td {
   text-align: left;
-  padding: 4px; /* Increase padding within table cells */
 }
 
 .table thead {
@@ -108,4 +107,26 @@
 
 .table tbody tr:hover {
   background-color: #e9ecef;
+}
+
+.actions {
+  display: flex;
+  gap: 3px;
+}
+
+.actions button {
+  padding: 0px;
+  font-size: 0.8rem;
+  border: 1px solid #ddd;
+  background-color: #3182d3;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.actions button:hover {
+  background-color: #e2e6ea; /* Hover etkisi ekleyin */
+}
+
+.actions button:active {
+  border-color: #b0b0b0;
 }

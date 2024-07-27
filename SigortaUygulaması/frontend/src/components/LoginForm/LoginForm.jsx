@@ -32,10 +32,15 @@ export default function LoginForm() {
           values
         );
         if (response.status === 200) {
-          const { token, firstName, lastName, role } = response.data;
+          console.log(response.data);
+          const { token, firstName, lastName, role, id } = response.data;
           localStorage.setItem("token", token);
           localStorage.setItem("firstName", firstName);
           localStorage.setItem("lastName", lastName);
+          localStorage.setItem(
+            "user",
+            JSON.stringify({ firstName, lastName, role, id })
+          );
 
           if (role === "admin") {
             navigate("/admin", { state: { firstName, lastName } });

@@ -19,6 +19,7 @@ router.get(
 // GET USER BY ID
 router.get("/users/:id", isAuthenticated, isAdmin, adminController.getUserById);
 
+// DELETE USER
 router.delete(
   "/users/:id",
   isAuthenticated,
@@ -26,6 +27,7 @@ router.delete(
   adminController.deleteUser
 );
 
+// UPDATE USER
 router.put("/users/:id", isAuthenticated, isAdmin, adminController.updateUser);
 
 module.exports = router;

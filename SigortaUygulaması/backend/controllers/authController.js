@@ -36,6 +36,7 @@ exports.login = (req, res, next) => {
 
       return res.json({
         message: "Giriş başarılı!",
+        id: user._id,
         token,
         firstName: user.firstName,
         lastName: user.lastName,

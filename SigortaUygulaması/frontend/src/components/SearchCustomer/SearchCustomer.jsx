@@ -3,12 +3,16 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./SearchCustomer.module.css";
 
+
+// DÜZENLE İŞLEMİNİ YAP FORM OLUŞTUR 
+
 export default function SearchCustomer() {
   const [isSearchPerformed, setIsSearchPerformed] = useState(false);
   const [tcNo, setTcNo] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [customers, setCustomers] = useState([]);
+  const token = localStorage.getItem("token");
 
   const navigate = useNavigate();
 
@@ -79,87 +83,136 @@ export default function SearchCustomer() {
     }
   };
 
+  // Dummy handlers for the buttons
+  const handleEdit = async (customerId) => {
+    console.log(customerId);
+  };
+
+  const handleDelete = async (customerId) => {
+    const confirmDelete = window.confirm(
+      `${customerId} id'li müşteri silinecektir. Devam etmek istiyor musunuz?`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/customers/musteri-ara/${customerId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        alert("Müşteri başarıyla silindi.");
+        setCustomers(
+          customers.filter((customer) => customer._id !== customerId)
+        );
+      }
+    } catch (error) {
+      console.error("Müşteri silme işlemi başarısız oldu:", error);
+    }
+  };
+
+  const handleEditOffers = (customerId) => {
+    console.log("Edit offers for customer with ID:", customerId);
+  };
+
   return (
-    <body className={styles.body}>
-      <div className={styles.container}>
-        <button
-          className={styles.backButton}
-          onClick={() => navigate("/dashboard")}
-        >
-          Geri
-        </button>
-        <div className={styles.header}>
-          <h2 className={styles.title}>Müşteri Arama</h2>
-        </div>
-        <form className={styles.form}>
-          <div className={styles["form-row"]}>
-            <div className={styles["form-group"]}>
-              <label htmlFor="firstName">Ad</label>
-              <input
-                name="firstName"
-                id="firstName"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className={styles["form-control"]}
-                type="text"
-              />
-            </div>
-            <div className={styles["form-group"]}>
-              <label>Soyad</label>
-              <input
-                name="lastName"
-                id="lastName"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className={styles["form-control"]}
-                type="text"
-              />
-            </div>
-            <div className={styles["form-group"]}>
-              <label>TC Kimlik No</label>
-              <input
-                name="tcNo"
-                id="tcNo"
-                value={tcNo}
-                onChange={(e) => setTcNo(e.target.value)}
-                className={styles["form-control"]}
-                type="text"
-              />
-            </div>
-          </div>
-          <button
-            type="button"
-            className={styles.listAllButton}
-            onClick={fetchAllCustomers}
-          >
-            Tümünü Listele
-          </button>
-        </form>
-        {isSearchPerformed && (
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>İsim</th>
-                <th>Soyisim</th>
-                <th>TC Kimlik No</th>
-                <th>Teklifler</th>
-              </tr>
-            </thead>
-            <tbody>
-              {customers.map((customer, index) => (
-                <tr key={customer._id}>
-                  <td>{index + 1}</td>
-                  <td>{customer.first_name}</td>
-                  <td>{customer.last_name}</td>
-                  <td>{customer.tc_no}</td>
-                  <td></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+    <div className={styles.container}>
+      <button
+        className={styles.backButton}
+        onClick={() => navigate("/dashboard")}
+      >
+        Geri
+      </button>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Müşteri Arama</h2>
       </div>
-    </body>
+      <form className={styles.form}>
+        <div className={styles["form-row"]}>
+          <div className={styles["form-group"]}>
+            <label htmlFor="firstName">Ad</label>
+            <input
+              name="firstName"
+              id="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className={styles["form-control"]}
+              type="text"
+            />
+          </div>
+          <div className={styles["form-group"]}>
+            <label>Soyad</label>
+            <input
+              name="lastName"
+              id="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className={styles["form-control"]}
+              type="text"
+            />
+          </div>
+          <div className={styles["form-group"]}>
+            <label>TC Kimlik No</label>
+            <input
+              name="tcNo"
+              id="tcNo"
+              value={tcNo}
+              onChange={(e) => setTcNo(e.target.value)}
+              className={styles["form-control"]}
+              type="text"
+            />
+          </div>
+        </div>
+        <button
+          type="button"
+          className={styles.listAllButton}
+          onClick={fetchAllCustomers}
+        >
+          Tümünü Listele
+        </button>
+      </form>
+      {isSearchPerformed && (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>İsim</th>
+              <th>Soyisim</th>
+              <th>TC Kimlik No</th>
+              <th>Teklifler</th>
+            </tr>
+          </thead>
+          <tbody>
+            {customers.map((customer, index) => (
+              <tr key={customer._id}>
+                <td>{index + 1}</td>
+                <td>{customer.first_name}</td>
+                <td>{customer.last_name}</td>
+                <td>{customer.tc_no}</td>
+                <td className={styles.actions}>
+                  <button onClick={() => handleEdit(customer._id)}>
+                    Düzenle
+                  </button>
+                  <button
+                    style={{ backgroundColor: "red" }}
+                    onClick={() => handleDelete(customer._id)}
+                  >
+                    Sil
+                  </button>
+                  <button
+                    style={{ backgroundColor: "orange" }}
+                    onClick={() => handleEditOffers(customer._id)}
+                  >
+                    Teklifleri Düzenle
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
   );
 }

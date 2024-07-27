@@ -75,4 +75,45 @@ exports.searchCustomers = async (req, res) => {
   res.json(customers);
 };
 
+// USER / UPDATE CUSTOMER
+exports.updateCustomer = async (req, res) => {
+  try {
+    const customerId = req.params.id;
+    const updateData = req.body;
 
+    const updatedCustomer = await Customer.findByIdAndUpdate(
+      customerId,
+      updateData,
+      { new: true }
+    ).select("-password");
+
+    if (!updatedCustomer) {
+      return res.status(404).json({ message: "Müşteri Bulunamadı" });
+    }
+
+    res.json({
+      message: "Müşteri Bilgileri Güncellendi",
+      customer: updatedCustomer,
+    });
+  } catch (error) {
+    console.error("Güncelleme hatası:", error);
+    res.status(500).json({ message: "Sunucu Hatası" });
+  }
+};
+
+// USER / DELETE CUSTOMER
+exports.deleteCustomer = async (req, res) => {
+  try {
+    const customerId = req.params.id;
+    const customer = await Customer.findByIdAndDelete(customerId);
+
+    if (!customer) {
+      res.status(404).json({ message: "Müşteri Bulunamadı" });
+    }
+
+    res.json({ message: "Müşteri Başarıyla Silindi" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Sunucu Hatası" });
+  }
+};
