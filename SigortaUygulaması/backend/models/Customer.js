@@ -19,4 +19,6 @@ const CustomerSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+CustomerSchema.index({ tc_no: 1, "addedBy.id": 1 }, { unique: true });
+
 module.exports = mongoose.model("Customer", CustomerSchema);

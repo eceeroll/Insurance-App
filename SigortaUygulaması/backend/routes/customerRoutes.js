@@ -11,7 +11,7 @@ router.get("/musteri-ara", isAuthenticated, customerController.searchCustomers);
 
 // Müşteri Bilgisi Güncelleme
 router.put(
-  "/musteri-ara/:İd",
+  "/musteri-ara/:id",
   isAuthenticated,
   customerController.updateCustomer
 );

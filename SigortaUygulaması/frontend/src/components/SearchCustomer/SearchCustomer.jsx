@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Modal from "react-modal";
+import { FaEdit } from "react-icons/fa";
 import axios from "axios";
 import styles from "./SearchCustomer.module.css";
 
-
-// DÜZENLE İŞLEMİNİ YAP FORM OLUŞTUR 
+Modal.setAppElement("#root");
 
 export default function SearchCustomer() {
   const [isSearchPerformed, setIsSearchPerformed] = useState(false);
@@ -12,7 +13,10 @@ export default function SearchCustomer() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [customers, setCustomers] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const token = localStorage.getItem("token");
+  const [editTableField, setEditTableField] = useState("");
 
   const navigate = useNavigate();
 
@@ -83,11 +87,6 @@ export default function SearchCustomer() {
     }
   };
 
-  // Dummy handlers for the buttons
-  const handleEdit = async (customerId) => {
-    console.log(customerId);
-  };
-
   const handleDelete = async (customerId) => {
     const confirmDelete = window.confirm(
       `${customerId} id'li müşteri silinecektir. Devam etmek istiyor musunuz?`
@@ -116,6 +115,53 @@ export default function SearchCustomer() {
 
   const handleEditOffers = (customerId) => {
     console.log("Edit offers for customer with ID:", customerId);
+  };
+
+  const handleEdit = async (customer) => {
+    setSelectedCustomer(customer);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedCustomer(null);
+    setEditTableField("");
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedCustomer((prevCustomer) => ({
+      ...prevCustomer,
+      [name]: value,
+    }));
+  };
+
+  const handleSaveUpdateForm = async () => {
+    try {
+      console.log("sending update:", selectedCustomer);
+      await axios.put(
+        `http://localhost:5000/api/customers/musteri-ara/${selectedCustomer._id}`,
+        selectedCustomer,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // müşteriler listesinde seçilen müşteriyi bulup güncelle
+      setCustomers((prevCustomers) =>
+        prevCustomers.map((customer) =>
+          customer._id === selectedCustomer._id ? selectedCustomer : customer
+        )
+      );
+
+      alert("Müşteri Bilgileri Güncellendi!");
+
+      handleModalClose();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -192,9 +238,7 @@ export default function SearchCustomer() {
                 <td>{customer.last_name}</td>
                 <td>{customer.tc_no}</td>
                 <td className={styles.actions}>
-                  <button onClick={() => handleEdit(customer._id)}>
-                    Düzenle
-                  </button>
+                  <button onClick={() => handleEdit(customer)}>Düzenle</button>
                   <button
                     style={{ backgroundColor: "red" }}
                     onClick={() => handleDelete(customer._id)}
@@ -212,6 +256,97 @@ export default function SearchCustomer() {
             ))}
           </tbody>
         </table>
+      )}
+      {isModalOpen && selectedCustomer && (
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={handleModalClose}
+          contentLabel="Müşteri Bilgilerini Düzenle"
+          className={styles.modal}
+          overlayClassName={styles.overlay}
+        >
+          <h2>Müşteri Bilgilerini Düzenle</h2>
+          <form className={styles.modalForm}>
+            <div className={styles["form-group"]}>
+              <label htmlFor="editFirstName">Ad</label>
+              <input
+                name="first_name"
+                id="editFirstName"
+                value={selectedCustomer.first_name}
+                onChange={handleInputChange}
+                className={styles["form-control"]}
+                type="text"
+                readOnly={editTableField !== "first_name"}
+              />
+              <FaEdit
+                className={styles.editIcon}
+                onClick={() => setEditTableField("first_name")}
+              />
+            </div>
+            <div className={styles["form-group"]}>
+              <label htmlFor="editLastName">Soyad</label>
+              <input
+                name="last_name"
+                id="editLastName"
+                value={selectedCustomer.last_name}
+                onChange={handleInputChange}
+                className={styles["form-control"]}
+                type="text"
+                readOnly={editTableField !== "last_name"}
+              />
+              <FaEdit
+                className={styles.editIcon}
+                onClick={() => setEditTableField("last_name")}
+              />
+            </div>
+            <div className={styles["form-group"]}>
+              <label htmlFor="editTcNo">TC Kimlik No</label>
+              <input
+                name="tc_no"
+                id="editTcNo"
+                value={selectedCustomer.tc_no}
+                onChange={handleInputChange}
+                className={styles["form-control"]}
+                type="text"
+                readOnly={editTableField !== "tc_no"}
+              />
+              <FaEdit
+                className={styles.editIcon}
+                onClick={() => setEditTableField("tc_no")}
+              />
+            </div>
+            <div className={styles["form-group"]}>
+              <label htmlFor="editEmail">Soyad</label>
+              <input
+                name="email"
+                id="editEmail"
+                value={selectedCustomer.email}
+                onChange={handleInputChange}
+                className={styles["form-control"]}
+                type="text"
+                readOnly={editTableField !== "email"}
+              />
+              <FaEdit
+                className={styles.editIcon}
+                onClick={() => setEditTableField("email")}
+              />
+            </div>
+            <button
+              type="button"
+              className={styles.saveButton}
+              onClick={handleSaveUpdateForm}
+            >
+              Kaydet
+            </button>
+            <button
+              type="button"
+              className={styles.cancelButton}
+              onClick={handleModalClose}
+            >
+              İptal
+            </button>
+          </form>
+        </Modal>
       )}
     </div>
   );

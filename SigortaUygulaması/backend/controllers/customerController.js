@@ -42,8 +42,14 @@ exports.addCustomer = async (req, res) => {
       .status(201)
       .json({ message: "Customer added successfully!", customer: newCustomer });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    if (error.code && error.code === 11000) {
+      // Benzersizlik hatası
+      return res
+        .status(400)
+        .json({ message: "Bu TC Kimlik Numarası zaten kayıtlı." });
+    }
+
+    res.status(500).json({ message: "Sunucu hatası" });
   }
 };
 

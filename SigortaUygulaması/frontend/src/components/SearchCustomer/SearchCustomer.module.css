@@ -130,3 +130,80 @@
 .actions button:active {
   border-color: #b0b0b0;
 }
+
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.saveButton {
+  background-color: #6a0dad;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  align-self: flex-end;
+}
+
+.cancelButton {
+  background-color: #ccc;
+  color: black;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  align-self: flex-end;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.inputWrapper input {
+  padding: 0px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: calc(100% - 40px); /* Adjusted to fit with the edit icon */
+}
+
+.editIcon {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+input[readonly] {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.modal::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Webkit browsers (Chrome, Safari) */
+}

@@ -39,6 +39,9 @@ export default function Dashboard() {
       <button className={styles.logoutButton} onClick={handleLogout}>
         Çıkış Yap
       </button>
+      <div className={styles.welcome}>
+        {user.firstName} {user.lastName} olarak giriş yaptınız
+      </div>
       <div className={styles.menu}>
         <button onClick={() => handleNavigation("/yeni-musteri")}>
           Yeni Müşteri
