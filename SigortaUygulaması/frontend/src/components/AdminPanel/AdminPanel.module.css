@@ -13,11 +13,12 @@
 .title {
   flex: 1;
   text-align: center;
+  font-size: 1.9rem;
 }
 
 .welcome {
   position: absolute;
-  top: 25px;
+  top: 22px;
   right: -10%;
   transform: translateX(-50%);
   font-size: 0.9em;

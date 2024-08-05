@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import styles from "./LoginForm.module.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { FaEye, FaEyeSlash, FaMoon, FaSun } from "react-icons/fa"; // Göz ve tema ikonları
 
 const LoginSchema = Yup.object().shape({
   username: Yup.string().required("Bu alan boş bırakılamaz!"),
@@ -15,6 +16,8 @@ export default function LoginForm() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Şifre görünürlüğünü kontrol eden state
+  const [darkMode, setDarkMode] = useState(false); // Dark mod kontrolü
 
   const formik = useFormik({
     initialValues: {
@@ -33,10 +36,12 @@ export default function LoginForm() {
         );
         if (response.status === 200) {
           console.log(response.data);
-          const { token, firstName, lastName, role, id } = response.data;
+          const { token, firstName, lastName, role, id, username } =
+            response.data;
           localStorage.setItem("token", token);
           localStorage.setItem("firstName", firstName);
           localStorage.setItem("lastName", lastName);
+          localStorage.setItem("username", username);
           localStorage.setItem(
             "user",
             JSON.stringify({ firstName, lastName, role, id })
@@ -45,7 +50,7 @@ export default function LoginForm() {
           if (role === "admin") {
             navigate("/admin", { state: { firstName, lastName } });
           } else if (role === "user") {
-            navigate("/dashboard", { state: { firstName, lastName } });
+            navigate("/dashboard");
           }
         }
       } catch (error) {
@@ -58,12 +63,12 @@ export default function LoginForm() {
         }, 5000);
       }
     },
-    validateOnBlur: true, // Kullanıcı alanı terk ettiğinde doğrulama yapar
-    validateOnChange: true, // Kullanıcı alanı değiştirdiğinde doğrulama yapar
+    validateOnBlur: true,
+    validateOnChange: true,
   });
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.dark : ""}`}>
       <div className={styles["sub-container"]}>
         <h2 className={styles.title}>Giriş Yap</h2>
         {showAlert && (
@@ -97,12 +102,12 @@ export default function LoginForm() {
             ) : null}
           </div>
 
-          <div className="mb-3">
+          <div className="mb-3 position-relative">
             <label htmlFor="password">
               <b>Parola</b>
             </label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Parola"
               name="password"
               id="password"
@@ -115,12 +120,19 @@ export default function LoginForm() {
                   : "form-control"
               }
             />
+            <div
+              className={styles.passwordToggle}
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </div>
             {formik.touched.password && formik.errors.password ? (
               <div className="form-text text-danger">
                 {formik.errors.password}
               </div>
             ) : null}
           </div>
+
           <div className={styles["forgot-password"]}>
             <Link to="/forgotPassword">Şifremi Unuttum</Link>
           </div>
@@ -132,6 +144,15 @@ export default function LoginForm() {
       <div className={styles.direct}>
         <span>Üye değil misiniz? </span>
         <Link to="/register">Hemen kaydolun</Link>
+      </div>
+      <div
+        className={styles.themeSwitcher}
+        onClick={() => setDarkMode(!darkMode)}
+      >
+        {darkMode ? <FaSun /> : <FaMoon />}
+        <span className={styles.switchText}>
+          {darkMode ? "Light Tema" : "Dark Tema"}
+        </span>
       </div>
     </div>
   );

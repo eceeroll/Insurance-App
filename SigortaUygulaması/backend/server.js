@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const authRoutes = require("./routes/authRoutes");
 const customerRoutes = require("./routes/customerRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const policyRoutes = require("./routes/policyRoutes");
 const isAuthenticated = require("./middlewares/authMiddleware");
 
 const PORT = 5000;
@@ -17,17 +18,14 @@ const corsOptions = {
   credentials: true,
 };
 
-// express bağlantısı
 const app = express();
 
-// Middleware'leri ekleyin
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({ secret: "secret", resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-// CORS middleware'ini ekleyin
 app.use(cors(corsOptions));
 
 // MongoDB bağlantısı
@@ -36,9 +34,11 @@ mongoose.connect("mongodb://127.0.0.1:27017/my-auth-db", {
   useUnifiedTopology: true,
 });
 
-app.use("/api", authRoutes); // Prefix routes with '/api'
+// Routes
+app.use("/api", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/admin", adminRoutes);
+app.use("/api/policy", policyRoutes);
 
 // Korunan dashboard route'u
 app.get("/dashboard", isAuthenticated, (req, res) => {

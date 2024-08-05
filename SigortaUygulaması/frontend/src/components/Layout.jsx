@@ -8,7 +8,7 @@ function Layout() {
       <header
         style={{ display: "flex", alignItems: "center", padding: "10px" }}
       >
-        <Logo />
+        {/* <Logo /> */}
       </header>
       <main>
         <Outlet />

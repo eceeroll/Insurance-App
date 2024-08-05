@@ -86,15 +86,22 @@
 /* Table styles */
 .table {
   margin-top: 20px;
-  border-collapse: separate; /* Ensure borders are separated for spacing */
-  border-spacing: 0.5rem;
+  border-collapse: separate;
+  border-spacing: 0rem;
+}
+
+.table tr {
+  padding: 0;
 }
 
 .table th {
-  padding: 28px;
+  padding: 5px; /* Küçültülmüş padding */
+  font-size: 0.9rem; /* Daha küçük font boyutu */
 }
+
 .table td {
   text-align: left;
+  padding: 2px;
 }
 
 .table thead {
@@ -115,7 +122,7 @@
 }
 
 .actions button {
-  padding: 0px;
+  padding: 6px;
   font-size: 0.8rem;
   border: 1px solid #ddd;
   background-color: #3182d3;
@@ -135,12 +142,13 @@
   background-color: white;
   padding: 20px;
   border-radius: 10px;
-  max-width: 500px;
+  max-width: 800px;
   margin: 0 auto;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 90%;
+  width: 40%;
   overflow-y: auto;
   max-height: 100vh;
+  z-index: 1050;
 }
 
 .overlay {
@@ -153,12 +161,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1040;
 }
 
 .modalForm {
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+
+.wideModal {
+  width: 800px;
 }
 
 .saveButton {
@@ -171,7 +184,8 @@
   align-self: flex-end;
 }
 
-.cancelButton {
+.cancelButton,
+.paymentButton {
   background-color: #ccc;
   color: black;
   border: none;
@@ -204,6 +218,40 @@ input[readonly] {
   cursor: not-allowed;
 }
 
+.policyDetailsContainer {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.policyDetails,
+.carDetails {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.policyDetails:last-child {
+  margin-right: 0;
+}
+
 .modal::-webkit-scrollbar {
-  display: none; /* Hide scrollbar for Webkit browsers (Chrome, Safari) */
+  display: none;
+}
+
+.detailsModal {
+  z-index: 1120;
+}
+
+.paymentButton {
+  display: inline-block;
+  padding: 5px 11px;
+  margin-right: 6px;
+  background-color: #007bff; /* Buton rengi */
+  color: white;
+
+  text-decoration: none;
+}
+
+.paymentButton:hover {
+  background-color: #0056b3; /* Üzerine gelindiğinde renk değişimi */
 }

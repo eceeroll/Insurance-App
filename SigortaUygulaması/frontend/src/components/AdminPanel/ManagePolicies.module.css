@@ -1,0 +1,135 @@
+.managePolicies {
+  padding: 20px;
+}
+
+h1 {
+  font-size: 26px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 50%;
+}
+
+.searchInput:focus {
+  outline: none;
+}
+
+.dropdownWrapper {
+  position: relative;
+}
+
+.filterButton,
+.sortButton {
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #6fa25f;
+}
+
+.dropdownWrapper {
+  position: relative;
+}
+
+.selectMenu {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #6fa25f;
+  color: #fff;
+  cursor: pointer;
+}
+
+.selectMenu:focus {
+  outline: none;
+}
+
+.selectMenu option {
+  background-color: #fff;
+  color: #000;
+}
+
+.selectMenu button {
+  display: block;
+  padding: 8px 12px;
+  width: 100%;
+  font-size: 14px;
+  text-align: left;
+  background-color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.selectMenu button:hover {
+  background-color: #f0f0f0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  font-size: 12px;
+}
+
+.table th {
+  background-color: #f9f9f9;
+  font-weight: bold;
+}
+
+.detailsButton,
+.deleteButton {
+  padding: 5px 10px;
+  font-size: 12px;
+  margin-right: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.detailsButton {
+  background-color: #4caf50;
+  color: white;
+  width: 50%;
+}
+
+.deleteButton {
+  background-color: #f44336;
+  color: white;
+  width: 50%;
+}
+
+.policyDetailsContainer {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.policyDetails,
+.carDetails {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.policyDetails:last-child {
+  margin-right: 0;
+}

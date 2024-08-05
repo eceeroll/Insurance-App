@@ -1,18 +1,26 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { FaInfoCircle } from "react-icons/fa";
+import DetailsModal from "../DetailsModal/DetailsModal";
 import axios from "axios";
 import styles from "./AdminPanel.module.css";
+import { getProductTypeByBranchCode } from "../../utils/getProductTypeByBranchCode";
 
 export default function AdminPanel() {
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const token = localStorage.getItem("token");
+
   const { firstName, lastName } = location.state;
   const [allCustomers, setAllCustomers] = useState([]);
+  const [allPolicies, setAllPolicies] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchAllCustomers = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "http://localhost:5000/admin/customers",
           {
@@ -27,8 +35,126 @@ export default function AdminPanel() {
       }
     };
 
+    const fetchAllPolicies = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/admin/policies",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setAllPolicies(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     fetchAllCustomers();
-  }, []);
+    fetchAllPolicies();
+  }, [token]);
+
+  const convertStatusCodeToText = (statusCode) => {
+    if (statusCode === "T") {
+      return "Teklif";
+    } else if (statusCode === "K") return "Kayıt";
+  };
+
+  const handleInfoClick = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  // seçilen iteme göre modal render
+  const renderModalContent = () => {
+    if (!selectedItem) return null;
+
+    if (selectedItem.policeNo) {
+      // Poliçe detayları
+      return (
+        <div>
+          <h3>Poliçe Detayları</h3>
+          <p>
+            <strong>Poliçe No:</strong> {selectedItem.policeNo}
+          </p>
+          <p>
+            <strong>Poliçe Türü:</strong>{" "}
+            {getProductTypeByBranchCode(selectedItem.bransKodu)}
+          </p>
+          <p>
+            <strong>Oluşturan Kullanıcı:</strong>{" "}
+            {selectedItem.onaylayan.username}
+          </p>
+          <p>
+            <strong>Başlangıç Tarihi:</strong>{" "}
+            {new Date(selectedItem.baslangicTarihi).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Tanzim Tarihi:</strong>{" "}
+            {new Date(selectedItem.tanzimTarihi).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Bitiş Tarihi:</strong>{" "}
+            {new Date(selectedItem.bitisTarihi).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Müşteri No:</strong>{" "}
+            {selectedItem.musteriBilgileri.musteriNo}
+          </p>
+          <p>
+            <strong>Müşteri Adı Soyadı:</strong>{" "}
+            {selectedItem.musteriBilgileri.musteriAd}{" "}
+            {selectedItem.musteriBilgileri.musteriSoyad}
+          </p>
+        </div>
+      );
+    } else {
+      // Müşteri detayları
+      return (
+        <div>
+          <h3>Müşteri Detayları</h3>
+          <p>
+            <strong>TC:</strong> {selectedItem.tc_no}
+          </p>
+          <p>
+            <strong>İsim:</strong> {selectedItem.first_name}
+          </p>
+          <p>
+            <strong>Soyisim:</strong> {selectedItem.last_name}
+          </p>
+          <p>
+            <strong>İl:</strong> {selectedItem.province}
+          </p>
+          <p>
+            <strong>İlçe:</strong>{" "}
+            {selectedItem.district.charAt(0).toUpperCase() +
+              selectedItem.district.slice(1).toLowerCase()}
+          </p>
+          <p>
+            <strong>Doğum Tarihi:</strong>{" "}
+            {new Date(selectedItem.date_of_birth).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Email:</strong> {selectedItem.email}
+          </p>
+          <p>
+            <strong>Telefon Numarası:</strong> {selectedItem.phone_number}
+          </p>
+          <p>
+            <strong>Oluşturan Kullanıcı:</strong>{" "}
+            {selectedItem.addedBy.username}
+          </p>
+        </div>
+      );
+    }
+  };
 
   return (
     <div className={styles.adminPanel}>
@@ -52,7 +178,12 @@ export default function AdminPanel() {
         >
           Kullanıcıları Yönet
         </button>
-        <button className={styles.button}>Teklifleri Yönet</button>
+        <button
+          onClick={() => navigate("/policeler")}
+          className={styles.button}
+        >
+          Teklifleri Yönet
+        </button>
       </div>
       <div className={styles.content}>
         <div className={styles.section}>
@@ -60,12 +191,33 @@ export default function AdminPanel() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Poliçe Detayı</th>
+                <th>Poliçe Türü</th>
+                <th>Poliçe No</th>
                 <th>Tarih</th>
+                <th>Oluşturan</th>
+                <th>Durum</th>
+                <th>Detaylar</th>
               </tr>
             </thead>
-            <tbody>{/* Tablo verileri buraya gelecek */}</tbody>
+            <tbody>
+              {allPolicies.map((policy) => (
+                <tr key={policy._id}>
+                  <td>{getProductTypeByBranchCode(policy.bransKodu)}</td>
+                  <td>{policy.policeNo}</td>
+                  <td>{new Date(policy.tanzimTarihi).toLocaleDateString()}</td>
+                  <td>{policy.onaylayan.username}</td>
+                  <td>{convertStatusCodeToText(policy.status)}</td>
+                  <td style={{ textAlign: "center" }}>
+                    <FaInfoCircle
+                      onClick={() => handleInfoClick(policy)}
+                      style={{ cursor: "pointer" }}
+                      size={20}
+                      color="#007bff"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
         <div className={styles.section}>
@@ -77,7 +229,8 @@ export default function AdminPanel() {
                 <th>İsim</th>
                 <th>Soyisim</th>
                 <th>Tarih</th>
-                <th>Oluşturan Kullanıcı</th>
+                <th>Oluşturan</th>
+                <th>Detaylar</th>
               </tr>
             </thead>
             <tbody>
@@ -88,12 +241,25 @@ export default function AdminPanel() {
                   <td>{customer.last_name}</td>
                   <td>{new Date(customer.createdAt).toLocaleDateString()}</td>
                   <td>{customer.addedBy.username}</td>
+                  <td style={{ textAlign: "center" }}>
+                    <FaInfoCircle
+                      onClick={() => handleInfoClick(customer)}
+                      style={{ cursor: "pointer" }}
+                      size={20}
+                      color="#007bff"
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+      <DetailsModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        content={renderModalContent()}
+      />
     </div>
   );
 }

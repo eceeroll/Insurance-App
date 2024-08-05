@@ -9,6 +9,10 @@ import AddCustomer from "./components/AddCustomer/AddCustomer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SearchCustomer from "./components/SearchCustomer/SearchCustomer";
 import ManageUsers from "./components/AdminPanel/ManageUsers";
+import CreatePolicy from "./components/CreatePolicy/CreatePolicy";
+import PaymentPage from "./components/PaymentPage/PaymentPage";
+import ManagePolicies from "./components/AdminPanel/ManagePolicies";
+import SearchPolicy from "./components/SearchPolicy/SearchPolicy";
 
 function App() {
   return (
@@ -51,6 +55,32 @@ function App() {
           element={
             <ProtectedRoute>
               <ManageUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/yeni-police"
+          element={
+            <ProtectedRoute>
+              <CreatePolicy />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/odeme-sayfasi" element={<PaymentPage />} />
+        <Route
+          path="/policeler"
+          element={
+            <ProtectedRoute>
+              <ManagePolicies />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/police-ara"
+          element={
+            <ProtectedRoute>
+              <SearchPolicy />
             </ProtectedRoute>
           }
         />

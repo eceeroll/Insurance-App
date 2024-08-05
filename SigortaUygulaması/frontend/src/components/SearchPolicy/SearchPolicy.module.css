@@ -1,0 +1,89 @@
+.searchPolicy {
+  padding: 20px;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.filters input,
+.filters select {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 214px;
+}
+
+.filters select {
+  background-color: #f8f9fa;
+}
+
+.sortSelect {
+  position: relative;
+  width: 230px;
+}
+
+.sortOrder {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.tableContainer button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 2px 9px;
+  margin: 0 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 60%;
+}
+
+.tableContainer button:hover {
+  background-color: #0056b3;
+}
+
+.tableContainer button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pdfdiv {
+  display: block;
+  position: absolute;
+  top: -10%;
+  left: -10%;
+}
+
+.hidden {
+  display: none;
+}

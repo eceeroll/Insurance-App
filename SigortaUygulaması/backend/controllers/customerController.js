@@ -1,4 +1,5 @@
 const Customer = require("../models/Customer");
+const Policy = require("../models/Policy");
 
 // USER / ADD CUSTOMER
 exports.addCustomer = async (req, res) => {
@@ -81,6 +82,21 @@ exports.searchCustomers = async (req, res) => {
   res.json(customers);
 };
 
+exports.getCustomerById = async (req, res) => {
+  try {
+    const customerId = req.params.id;
+    const customer = await Customer.findById(customerId);
+
+    if (!customer) {
+      res.status(404).json({ message: "Müşteri Bulunamadı" });
+    }
+
+    res.json(customer);
+  } catch (error) {
+    res.status(500).json({ message: "Sunucu Hatası" });
+  }
+};
+
 // USER / UPDATE CUSTOMER
 exports.updateCustomer = async (req, res) => {
   try {
@@ -121,5 +137,29 @@ exports.deleteCustomer = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Sunucu Hatası" });
+  }
+};
+
+// GET POLICIES BELONG TO CUSTOMER
+
+exports.getPolicies = async (req, res) => {
+  try {
+    const { musteriNo } = req.params; // URL'den müşteri numarasını alın
+
+    // Müşteri numarasına göre poliçeleri sorgulama
+    const policies = await Policy.find({
+      "musteriBilgileri.musteriNo": musteriNo,
+    });
+
+    if (!policies || policies.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No policies found for this customer." });
+    }
+
+    res.status(200).json(policies);
+  } catch (error) {
+    console.error("Error fetching policies:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };

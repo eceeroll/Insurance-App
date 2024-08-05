@@ -77,3 +77,46 @@ input {
     width: 100%;
   }
 }
+.dark {
+  /* Karanlık tema */
+  background-color: #343a40;
+  color: #f8f9fa;
+}
+
+.themeSwitcher {
+  position: fixed;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 5px 10px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.themeSwitcher:hover {
+  background: #f8f9fa;
+}
+
+.switchText {
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 10px;
+  top: 70%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 18px;
+  z-index: 10; /* Input alanının üstünde görünmesini sağlar */
+}
+
+.passwordToggle:hover {
+  color: #007bff;
+}

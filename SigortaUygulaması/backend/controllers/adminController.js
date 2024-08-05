@@ -1,9 +1,6 @@
 const User = require("../models/User");
 const Customer = require("../models/Customer");
-
-// Admin - Kullanıcıları Düzenle Sayfası -> Kullanıcıları Listele - Yanlarına Silme ve Düzenleme Butonları Koy. Silme ve Düzenleme işlemlerini Gerçekleştir. Admin olarak belirle Butonu da koy.
-
-// User - Müşteri Arama Sayfası -> Teklifleri Düzenle - Düzenle - Sil Butonları Koy. Düzenle ve Sil işlemlerini gerçekleştir.
+const Policy = require("../models/Policy");
 
 // GET ALL USERS
 exports.getAllUsers = async (req, res) => {
@@ -78,3 +75,16 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ message: "Sunucu Hatası" });
   }
 };
+
+// GET ALL POLICIES
+exports.getAllPolicies = async (req, res) => {
+  try {
+    const allPolicies = await Policy.find().sort({ createdAt: -1 });
+    res.json(allPolicies);
+  } catch (error) {
+    res.status(500).json({ message: "Sunucu Hatası", error });
+  }
+};
+
+
+

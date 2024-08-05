@@ -1,0 +1,82 @@
+/* PDFComponent.module.css */
+
+/* Genel stil */
+.pdfContainer {
+  font-family: "Arial", sans-serif;
+  color: #333;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Başlık */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 34px;
+  margin: 0;
+}
+
+/* Alt başlıklar */
+.subTitle {
+  font-size: 21px;
+  font-weight: bold;
+  margin: 15px 0;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+/* Bilgi satırları */
+.infoRow {
+  font-size: 19px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.infoRow div {
+  width: 48%;
+}
+
+/* Bilgi alanları */
+.infoField {
+  margin-bottom: 5px;
+  font-size: 19px;
+}
+
+.infoField span {
+  font-weight: bold;
+}
+
+/* Tablo stili */
+.tableContainer {
+  margin-top: 20px;
+}
+
+.tableContainer table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.tableContainer th,
+.tableContainer td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.tableContainer th {
+  background-color: #f2f2f2;
+}
+
+/* Dipnot veya ek bilgi */
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 17px;
+  color: #999;
+}

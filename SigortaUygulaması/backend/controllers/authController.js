@@ -1,10 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-// const passport = require("../config/passport");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
-// Login route handler
 exports.login = (req, res, next) => {
   passport.authenticate("local", { session: false }, (err, user, info) => {
     if (err) {
@@ -19,18 +17,14 @@ exports.login = (req, res, next) => {
         console.error("Error during login:", err);
         return res.status(500).json({ message: "Giriş hatası." });
       }
-      console.log("Sending response:", {
-        message: "Giriş başarılı!",
-        firstName: user.firstName,
-        lastName: user.lastName,
-      });
+
       console.log("Login successful with user:", user);
 
       const token = jwt.sign(
         { id: user._id, role: user.role, username: user.username },
         process.env.JWT_SECRET,
         {
-          expiresIn: "1h",
+          expiresIn: "12h",
         }
       );
 
@@ -40,13 +34,13 @@ exports.login = (req, res, next) => {
         token,
         firstName: user.firstName,
         lastName: user.lastName,
+        username: user.username,
         role: user.role,
       });
     });
   })(req, res, next);
 };
 
-// Register route handler
 exports.register = async (req, res) => {
   try {
     const { firstName, lastName, username, password, email, role } = req.body;

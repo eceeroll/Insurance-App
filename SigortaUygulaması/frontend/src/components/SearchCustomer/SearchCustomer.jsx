@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-modal";
+import { Link } from "react-router-dom";
+import DetailsModal from "../DetailsModal/DetailsModal";
 import { FaEdit } from "react-icons/fa";
 import axios from "axios";
 import styles from "./SearchCustomer.module.css";
+import { getProductTypeByBranchCode } from "../../utils/getProductTypeByBranchCode";
 
 Modal.setAppElement("#root");
 
 export default function SearchCustomer() {
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
   const [isSearchPerformed, setIsSearchPerformed] = useState(false);
   const [tcNo, setTcNo] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -15,10 +21,13 @@ export default function SearchCustomer() {
   const [customers, setCustomers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const token = localStorage.getItem("token");
   const [editTableField, setEditTableField] = useState("");
-
-  const navigate = useNavigate();
+  const [customerPolicies, setCustomerPolicies] = useState([]);
+  const [isPoliciesModalOpen, setIsPoliciesModalOpen] = useState(false);
+  const [selectedPolicy, setSelectedPolicy] = useState(null);
+  const [carDetails, setCarDetails] = useState(null);
+  const [showPolicyDetails, setShowPolicyDetails] = useState(false);
+  const [detailsContent, setDetailsContent] = useState(null);
 
   useEffect(() => {
     if (tcNo || firstName || lastName) {
@@ -29,6 +38,14 @@ export default function SearchCustomer() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tcNo, firstName, lastName]);
+
+  useEffect(() => {
+    if (selectedPolicy) {
+      const content = renderModalContent();
+      setDetailsContent(content);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPolicy]);
 
   const fetchCustomers = async () => {
     try {
@@ -49,14 +66,20 @@ export default function SearchCustomer() {
 
       const filteredCustomers = response.data.filter((customer) => {
         const matchesTcNo =
-          tcNo === "" ||
-          customer.tc_no.toLowerCase().startsWith(tcNo.toLowerCase());
+          tcNo.trim().toLowerCase() === "" ||
+          customer.tc_no.trim().toLowerCase().startsWith(tcNo.toLowerCase());
         const matchesFirstName =
-          firstName === "" ||
-          customer.first_name.toLowerCase().startsWith(firstName.toLowerCase());
+          firstName.trim().toLowerCase() === "" ||
+          customer.first_name
+            .trim()
+            .toLowerCase()
+            .startsWith(firstName.toLowerCase());
         const matchesLastName =
-          lastName === "" ||
-          customer.last_name.toLowerCase().startsWith(lastName.toLowerCase());
+          lastName.trim().toLowerCase === "" ||
+          customer.last_name
+            .trim()
+            .toLowerCase()
+            .startsWith(lastName.toLowerCase());
 
         return matchesTcNo && matchesFirstName && matchesLastName;
       });
@@ -113,8 +136,22 @@ export default function SearchCustomer() {
     }
   };
 
-  const handleEditOffers = (customerId) => {
-    console.log("Edit offers for customer with ID:", customerId);
+  const handleEditOffers = async (customerId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/customers/policeler/${customerId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setCustomerPolicies(response.data);
+      setSelectedCustomer(customerId);
+      setIsPoliciesModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching policies:", error);
+    }
   };
 
   const handleEdit = async (customer) => {
@@ -162,6 +199,147 @@ export default function SearchCustomer() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handlePoliciesModalClose = () => {
+    setIsPoliciesModalOpen(false);
+    setCustomerPolicies([]);
+  };
+
+  const handlePayment = () => {
+    console.log("dkd");
+  };
+
+  const handleDeletePolicy = async (policyId) => {
+    const confirmDelete = window.confirm(
+      `${policyId} id'li poliçe silinecektir. Devam etmek istiyor musunuz?`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/customers/policeler/${policyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Poliçe Silindi");
+        setCustomerPolicies((prevPolicies) =>
+          prevPolicies.filter((policy) => policy._id !== policyId)
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleShowPolicyDetails = async (policy) => {
+    setShowPolicyDetails(true);
+    setSelectedPolicy(policy);
+    setIsPoliciesModalOpen(false);
+
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/policy/policeler/${policy._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("API Yanıtı:", response.data);
+
+      const { policy: detailedPolicy, carDetails } = response.data;
+
+      setSelectedPolicy(detailedPolicy);
+      setCarDetails(carDetails);
+    } catch (error) {
+      console.error("Sunucu Hatası:", error);
+    }
+  };
+
+  // modal içeriği
+  const renderModalContent = () => {
+    if (selectedPolicy) {
+      return (
+        <div>
+          <h3>Poliçe Detayları</h3>
+          <div className={styles.policyDetailsContainer}>
+            <div className={styles.policyDetails}>
+              <h4>Poliçe Bilgileri</h4>
+              <p>
+                <strong>Poliçe No:</strong> {selectedPolicy.policeNo}
+              </p>
+              <p>
+                <strong>Poliçe Türü:</strong>{" "}
+                {getProductTypeByBranchCode(selectedPolicy.bransKodu)}
+              </p>
+              <p>
+                <strong>Başlangıç Tarihi:</strong>{" "}
+                {new Date(selectedPolicy.baslangicTarihi).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Tanzim Tarihi:</strong>{" "}
+                {new Date(selectedPolicy.tanzimTarihi).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Bitiş Tarihi:</strong>{" "}
+                {new Date(selectedPolicy.bitisTarihi).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Müşteri No:</strong>{" "}
+                {selectedPolicy.musteriBilgileri.musteriNo}
+              </p>
+              <p>
+                <strong>Müşteri Adı Soyadı:</strong>{" "}
+                {selectedPolicy.musteriBilgileri.musteriAd}{" "}
+                {selectedPolicy.musteriBilgileri.musteriSoyad}
+              </p>
+            </div>
+            <div className={styles.carDetails}>
+              {carDetails && (
+                <div>
+                  <h4>Araç Bilgileri</h4>
+                  <p>
+                    <strong>Plaka İl Kodu:</strong> {carDetails.plakaIlKodu}
+                  </p>
+                  <p>
+                    <strong>Plaka Kodu:</strong> {carDetails.plakaKodu}
+                  </p>
+                  <p>
+                    <strong>Marka:</strong> {carDetails.aracMarka}
+                  </p>
+                  <p>
+                    <strong>Model:</strong> {carDetails.aracModel}
+                  </p>
+                  <p>
+                    <strong>Model Yılı:</strong> {carDetails.aracModelYili}
+                  </p>
+                  <p>
+                    <strong>Motor No:</strong> {carDetails.motorNo}
+                  </p>
+                  <p>
+                    <strong>Şasi No:</strong> {carDetails.sasiNo}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return <p>Loading...</p>;
+    }
+  };
+
+  const handleDetailsModalClose = () => {
+    setShowPolicyDetails(false);
+    setSelectedPolicy(null);
   };
 
   return (
@@ -245,8 +423,9 @@ export default function SearchCustomer() {
                   >
                     Sil
                   </button>
+
                   <button
-                    style={{ backgroundColor: "orange" }}
+                    // style={{ backgroundColor: "orange" }}
                     onClick={() => handleEditOffers(customer._id)}
                   >
                     Teklifleri Düzenle
@@ -257,6 +436,7 @@ export default function SearchCustomer() {
           </tbody>
         </table>
       )}
+      {/* Müşteri Bilgileri Düzenle */}
       {isModalOpen && selectedCustomer && (
         <Modal
           isOpen={isModalOpen}
@@ -347,6 +527,93 @@ export default function SearchCustomer() {
             </button>
           </form>
         </Modal>
+      )}
+      {/* Poliçeler Listesi Detayları */}
+      {isPoliciesModalOpen && (
+        <Modal
+          isOpen={isPoliciesModalOpen}
+          onRequestClose={handlePoliciesModalClose}
+          className={`${styles.modal} ${styles.wideModal} `}
+          overlayClassName={styles.overlay}
+        >
+          <h2>Poliçeler</h2>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Poliçe No</th>
+                <th>Poliçe Türü</th>
+                <th>Prim</th>
+                <th>Durum</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody>
+              {customerPolicies.map((policy) => (
+                <tr key={policy._id}>
+                  <td>{policy.policeNo}</td>
+                  <td>{getProductTypeByBranchCode(policy.bransKodu)}</td>
+                  <td>{policy.prim} ₺</td>
+                  <td>{policy.status === "T" ? "Teklif" : "Kayıt"}</td>
+                  <td>
+                    {policy.status === "T" ? (
+                      <Link
+                        to={`/odeme-sayfasi?id=${policy._id}&prim=${policy.prim}`}
+                        className={styles.paymentButton}
+                        onClick={() => handlePayment(policy._id)}
+                      >
+                        Ödeme Yap
+                      </Link>
+                    ) : (
+                      <button
+                        style={{
+                          padding: "3px 6px",
+                          fontSize: "0.8rem",
+                          display: "inline-block",
+                          marginRight: "5px",
+                          width: "50%",
+                        }}
+                        onClick={() => handleShowPolicyDetails(policy)}
+                      >
+                        Detaylar
+                      </button>
+                    )}
+
+                    {policy.status === "T" ? (
+                      <button
+                        onClick={() => handleDeletePolicy(policy._id)}
+                        style={{
+                          padding: "3px 6px",
+                          fontSize: "0.8rem",
+                          display: "inline-block",
+                          width: "40%",
+                          backgroundColor: "#dc3545",
+                        }}
+                      >
+                        İptal Et
+                      </button>
+                    ) : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            type="button"
+            onClick={handlePoliciesModalClose}
+            className={styles.closeButton}
+          >
+            Kapat
+          </button>
+        </Modal>
+      )}
+      {/* Bir Poliçeye Ait Detaylar */}
+      {showPolicyDetails && (
+        <DetailsModal
+          className={styles.detailsModal}
+          isOpen={showPolicyDetails}
+          onClose={handleDetailsModalClose}
+          content={detailsContent}
+        />
       )}
     </div>
   );
