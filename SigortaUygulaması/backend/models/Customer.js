@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const CustomerSchema = new mongoose.Schema(
   {
+    musteri_no: { type: String, required: true, unique: true },
     tc_no: { type: String, required: true, unique: true },
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },

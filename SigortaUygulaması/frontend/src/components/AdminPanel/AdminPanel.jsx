@@ -106,7 +106,7 @@ export default function AdminPanel() {
           </p>
           <p>
             <strong>Müşteri No:</strong>{" "}
-            {selectedItem.musteriBilgileri.musteriNo}
+            {selectedItem.musteriBilgileri.musteriNumarasi}
           </p>
           <p>
             <strong>Müşteri Adı Soyadı:</strong>{" "}
@@ -120,6 +120,9 @@ export default function AdminPanel() {
       return (
         <div>
           <h3>Müşteri Detayları</h3>
+          <p>
+            <strong>Müşteri Numarası:</strong> {selectedItem.musteri_no}
+          </p>
           <p>
             <strong>TC:</strong> {selectedItem.tc_no}
           </p>
@@ -225,7 +228,7 @@ export default function AdminPanel() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>ID</th>
+                <th>Müşteri No</th>
                 <th>İsim</th>
                 <th>Soyisim</th>
                 <th>Tarih</th>
@@ -234,9 +237,9 @@ export default function AdminPanel() {
               </tr>
             </thead>
             <tbody>
-              {allCustomers.map((customer, index) => (
+              {allCustomers.map((customer) => (
                 <tr key={customer._id}>
-                  <td>{index + 1}</td>
+                  <td>{customer.musteri_no}</td>
                   <td>{customer.first_name}</td>
                   <td>{customer.last_name}</td>
                   <td>{new Date(customer.createdAt).toLocaleDateString()}</td>

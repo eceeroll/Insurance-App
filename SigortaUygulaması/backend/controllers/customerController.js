@@ -1,6 +1,11 @@
 const Customer = require("../models/Customer");
 const Policy = require("../models/Policy");
 
+const generateCustomerNumber = () => {
+  // 100000 ile 999999 arasında rastgele bir sayı üretir
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
 // USER / ADD CUSTOMER
 exports.addCustomer = async (req, res) => {
   try {
@@ -15,13 +20,26 @@ exports.addCustomer = async (req, res) => {
       email,
     } = req.body;
 
-    console.log("req.user-", req.user);
-
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
+    let newCustomerNumber;
+    let isUnique = false;
+
+    // benzersiz mi diye kontrol et
+    while (!isUnique) {
+      newCustomerNumber = generateCustomerNumber();
+      const existingCustomer = await Customer.findOne({
+        musteriNo: newCustomerNumber,
+      }).exec();
+      if (!existingCustomer) {
+        isUnique = true;
+      }
+    }
+
     const newCustomer = new Customer({
+      musteri_no: newCustomerNumber,
       first_name,
       last_name,
       tc_no,
@@ -88,7 +106,7 @@ exports.getCustomerById = async (req, res) => {
     const customer = await Customer.findById(customerId);
 
     if (!customer) {
-      res.status(404).json({ message: "Müşteri Bulunamadı" });
+      return res.status(404).json({ message: "Müşteri Bulunamadı" });
     }
 
     res.json(customer);

@@ -136,7 +136,6 @@ th,
 td {
   border: 1px solid #ddd;
   padding: 0;
-  font-size: 12px;
 }
 
 th,
@@ -150,7 +149,7 @@ td {
 .tableButton {
   width: 100px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   padding: 3px;
   background-color: #45b579;
   color: #fff;
@@ -159,7 +158,7 @@ td {
 
 @media (max-width: 768px) {
   .tablesContainer {
-    flex-direction: column; /* Mobilde tabloları dikey gösterir */
+    flex-direction: column; 
   }
 
   .tableSection {
@@ -169,14 +168,14 @@ td {
 
 .policyDetailsContainer {
   display: flex;
-  flex-direction: column; /* Bilgileri dikey hizalar */
+  flex-direction: column; 
   margin: 20px 0;
   font-size: 21px;
 }
 
 .policyDetails,
 .carDetails {
-  margin-bottom: 20px; /* Bilgiler arasında boşluk bırakır */
+  margin-bottom: 20px; 
 }
 
 .policyDetails:last-child {

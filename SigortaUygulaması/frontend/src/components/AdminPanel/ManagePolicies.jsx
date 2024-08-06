@@ -157,7 +157,6 @@ export default function ManagePolicies() {
           <h3>Poliçe Detayları</h3>
           <div className={styles.policyDetailsContainer}>
             <div className={styles.policyDetails}>
-              <h4>Poliçe Bilgileri</h4>
               <p>
                 <strong>Poliçe No:</strong> {selectedPolicy.policeNo}
               </p>
@@ -183,7 +182,7 @@ export default function ManagePolicies() {
               </p>
               <p>
                 <strong>Müşteri No:</strong>{" "}
-                {selectedPolicy.musteriBilgileri.musteriNo}
+                {selectedPolicy.musteriBilgileri.musteriNumarasi}
               </p>
               <p>
                 <strong>Müşteri Adı Soyadı:</strong>{" "}
@@ -279,7 +278,7 @@ export default function ManagePolicies() {
             <tr key={policy._id}>
               <td>{getProductTypeByBranchCode(policy.bransKodu)}</td>
               <td>{policy.policeNo}</td>
-              <td>{policy.musteriBilgileri.musteriNo}</td>
+              <td>{policy.musteriBilgileri.musteriNumarasi}</td>
               <td>{new Date(policy.baslangicTarihi).toLocaleDateString()}</td>
               <td>{policy.status === "T" ? "Teklif" : "Kayıt"}</td>
               <td>

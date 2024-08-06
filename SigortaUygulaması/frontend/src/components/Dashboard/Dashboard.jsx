@@ -6,9 +6,9 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Dashboard.module.css";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { ProductCodes } from "../../productCodes";
 import PDFComponent from "../PDFComponent/PDFComponent";
 import { Link } from "react-router-dom";
+import { getProductTypeByBranchCode } from "../../utils/getProductTypeByBranchCode";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -159,13 +159,6 @@ export default function Dashboard() {
       localStorage.removeItem("lastName");
       navigate("/login");
     }
-  };
-
-  const getProductTypeByBranchCode = (bransKodu) => {
-    const product = Object.values(ProductCodes).find(
-      (product) => product.code === bransKodu
-    );
-    return product ? product.name : "Bilinmiyor";
   };
 
   function calculateRemainingTime(endDate) {

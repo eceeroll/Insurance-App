@@ -66,6 +66,7 @@ exports.createPolicy = async (req, res) => {
     const newPolicy = new Policy({
       policeNo,
       musteriBilgileri: {
+        musteriNumarasi: customer.musteri_no,
         musteriNo,
         musteriAd: customer.first_name,
         musteriSoyad: customer.last_name,
@@ -80,8 +81,14 @@ exports.createPolicy = async (req, res) => {
       tanzimTarihi: new Date(),
       baslangicTarihi,
       bitisTarihi,
-      binaBilgileri: bransKodu === "199" ? binaBilgileri : null,
+
+      binaBilgileri: bransKodu === "199" ? binaBilgileri : undefined, // undefined olarak ayarlandığında MongoDB'de eklenmez
     });
+
+    // if (bransKodu === "199" && binaBilgileri) {
+    //   // Only include binaBilgileri if it's provided and bransKodu is 199
+    //   newPolicy.binaBilgileri = binaBilgileri;
+    // }
 
     await newPolicy.save();
 

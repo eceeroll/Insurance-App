@@ -33,16 +33,32 @@ export default function CreatePolicy() {
   const [showPolicyDetails, setShowPolicyDetails] = useState(false);
   const [detailsContent, setDetailsContent] = useState(null);
   const [buttonsVisible, setButtonsVisible] = useState(true);
+  const [selectedCustomerNo, setSelectedCustomerNo] = useState("");
 
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
 
+  const getCustomerInfo = async () => {
+    const response = await axios.get(
+      `http://localhost:5000/api/customers/musteri-ara/${selectedCustomer}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    setSelectedCustomerNo(response.data.musteri_no);
+  };
+
   // Poliçeleştirme İşlemi
   const handleCreatePolicy = async () => {
+    await getCustomerInfo();
     const userId = currentUser.id;
     const musteriNo = selectedCustomer;
     const carId = selectedCarId;
+    const musteriNumarasi = selectedCustomerNo;
 
     try {
       let data;

@@ -23,10 +23,10 @@ const PDFComponent = React.forwardRef(
         </div>
         <div className={styles.infoRow}>
           <div className={styles.infoField}>
-            <span>TC No:</span> {customerInfo.tc_no}
+            <span>TC Kimlik Numarası:</span> {customerInfo.tc_no}
           </div>
           <div className={styles.infoField}>
-            <span>Doğum Tarihi:</span> {formatDate(customerInfo.date_of_birth)}
+            <span>Müşteri Numarası:</span> {customerInfo.musteri_no}
           </div>
         </div>
         <div className={styles.infoRow}>
@@ -37,8 +37,13 @@ const PDFComponent = React.forwardRef(
             <span>İlçe:</span> {customerInfo.district}
           </div>
         </div>
-        <div className={styles.infoField}>
-          <span>Telefon Numarası:</span> {customerInfo.phone_number}
+        <div className={styles.infoRow}>
+          <div className={styles.infoField}>
+            <span>Telefon Numarası:</span> {customerInfo.phone_number}
+          </div>
+          <div className={styles.infoField}>
+            <span>Doğum Tarihi:</span> {formatDate(customerInfo.date_of_birth)}
+          </div>
         </div>
 
         {bransKodu === "310" || bransKodu === "340" ? (
@@ -78,9 +83,6 @@ const PDFComponent = React.forwardRef(
         <div className={styles.infoRow}>
           <div className={styles.infoField}>
             <span>Poliçe No:</span> {policyInfo.policeNo}
-          </div>
-          <div className={styles.infoField}>
-            <span>Müşteri No:</span> {policyInfo.musteriBilgileri.musteriNo}
           </div>
         </div>
         <div className={styles.infoField}>

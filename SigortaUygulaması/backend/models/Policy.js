@@ -21,6 +21,7 @@ const policySchema = new mongoose.Schema({
       ref: "Customer",
       required: true,
     },
+    musteriNumarasi: { type: String, unique: true, required: true },
     musteriAd: { type: String, required: true },
     musteriSoyad: { type: String, required: true },
   },
@@ -40,7 +41,7 @@ const policySchema = new mongoose.Schema({
   baslangicTarihi: { type: Date, required: true },
   bitisTarihi: { type: Date, required: true },
   // dask için
-  binaBilgileri: { type: binaBilgileriSchema, default: null },
+  binaBilgileri: { type: binaBilgileriSchema },
 });
 
 policySchema.pre("save", function (next) {

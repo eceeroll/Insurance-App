@@ -95,13 +95,15 @@
 }
 
 .table th {
-  padding: 5px; /* Küçültülmüş padding */
-  font-size: 0.9rem; /* Daha küçük font boyutu */
+  padding: 5px;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 .table td {
-  text-align: left;
-  padding: 2px;
+  text-align: center;
+  padding: 4px;
+  font-size: 12px;
 }
 
 .table thead {

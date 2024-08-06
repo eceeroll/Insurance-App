@@ -110,9 +110,9 @@ export default function SearchCustomer() {
     }
   };
 
-  const handleDelete = async (customerId) => {
+  const handleDelete = async (musteriNo) => {
     const confirmDelete = window.confirm(
-      `${customerId} id'li müşteri silinecektir. Devam etmek istiyor musunuz?`
+      `${musteriNo} nolu müşteri silinecektir. Devam etmek istiyor musunuz?`
     );
     if (!confirmDelete) return;
 
@@ -293,7 +293,7 @@ export default function SearchCustomer() {
               </p>
               <p>
                 <strong>Müşteri No:</strong>{" "}
-                {selectedPolicy.musteriBilgileri.musteriNo}
+                {selectedPolicy.musteriBilgileri.musteriNumarasi}
               </p>
               <p>
                 <strong>Müşteri Adı Soyadı:</strong>{" "}
@@ -401,7 +401,7 @@ export default function SearchCustomer() {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Müşteri No</th>
               <th>İsim</th>
               <th>Soyisim</th>
               <th>TC Kimlik No</th>
@@ -409,9 +409,9 @@ export default function SearchCustomer() {
             </tr>
           </thead>
           <tbody>
-            {customers.map((customer, index) => (
+            {customers.map((customer) => (
               <tr key={customer._id}>
-                <td>{index + 1}</td>
+                <td>{customer.musteri_no}</td>
                 <td>{customer.first_name}</td>
                 <td>{customer.last_name}</td>
                 <td>{customer.tc_no}</td>
@@ -419,7 +419,7 @@ export default function SearchCustomer() {
                   <button onClick={() => handleEdit(customer)}>Düzenle</button>
                   <button
                     style={{ backgroundColor: "red" }}
-                    onClick={() => handleDelete(customer._id)}
+                    onClick={() => handleDelete(customer.musteri_no)}
                   >
                     Sil
                   </button>
