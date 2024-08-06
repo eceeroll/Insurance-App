@@ -1,5 +1,7 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { FaUser } from "react-icons/fa"; // Profil ikonu
+
 import { useNavigate } from "react-router-dom";
 import styles from "./Dashboard.module.css";
 import { useEffect, useState, useRef } from "react";
@@ -12,6 +14,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const currentUser = JSON.parse(localStorage.getItem("user"));
+  // eslint-disable-next-line no-unused-vars
   const [allPolicies, setAllPolicies] = useState([]);
   const [pendingPolicies, setPendingPolicies] = useState([]);
   const [processedPolicies, setProcessedPolicies] = useState([]);
@@ -19,6 +22,7 @@ export default function Dashboard() {
   const [carDetails, setCarDetails] = useState(null);
   const [customerDetails, setCustomerDetails] = useState(null);
   const [isPdfHidden, setIsPdfHidden] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const pdfContentRef = useRef(null);
 
@@ -181,13 +185,28 @@ export default function Dashboard() {
     return `${daysRemaining} gün ${hoursRemaining} saat`;
   }
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <div className={styles.dashboard}>
-      <button className={styles.logoutButton} onClick={handleLogout}>
-        Çıkış Yap
-      </button>
-      <div className={styles.welcome}>
-        {currentUser.firstName} {currentUser.lastName}
+      <div className={styles.profileMenu}>
+        <div className={styles.profileInfo} onClick={toggleMenu}>
+          <FaUser className={styles.profileIcon} size={20} />
+          {currentUser.firstName} {currentUser.lastName}
+        </div>
+        <div
+          className={
+            isMenuOpen
+              ? `${styles.dropdownMenu} ${styles.active}`
+              : styles.dropdownMenu
+          }
+        >
+          <Link to="/profile">Profilim</Link>
+          <Link to="/sifre-yenile">Şifre Yenile</Link>
+          <button onClick={handleLogout}>Çıkış Yap</button>
+        </div>
       </div>
       <div className={styles.menu}>
         <button onClick={() => handleNavigation("/yeni-musteri")}>

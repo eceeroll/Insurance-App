@@ -6,13 +6,13 @@
   width: 575px;
   border: none;
   padding: 20px;
-  border-radius: 1em; /* Köşe yuvarlaklığı arttırıldı */
+  border-radius: 1em; 
   box-shadow: 5px 7px 12px rgba(0, 0, 0, 0.121);
   box-sizing: border-box;
   margin: auto;
-  height: auto; /* Yüksekliği otomatik ayarla */
-  align-items: center; /* Container'ı yatayda ortalar */
-  justify-content: center; /* Container'ı dikeyde ortalar */
+  height: auto; 
+  align-items: center; 
+  justify-content: center; 
   position: relative;
 }
 
@@ -23,14 +23,14 @@
 
 .sub-container {
   padding: 3px;
-  width: 415px; /* Maksimum genişlik */
+  width: 415px; 
 }
 
-/* Input grupları için */
+
 .inputGroup {
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.5rem; /* Input grupları arasında boşluk */
+  margin-bottom: 0.5rem; 
 }
 
 .inputGroup label {
@@ -47,7 +47,7 @@
   box-sizing: border-box; /* İçerik alanını sınırla */
 }
 
-/* Hata metinleri */
+
 .errorText {
   color: red;
   font-size: 12px;
@@ -55,13 +55,13 @@
   margin-bottom: 8px;
 }
 
-/* Hatalı inputlar için */
+
 .errorInput {
   border: 1px solid red;
   background-color: #ff9696;
 }
 
-/* Başarı mesajı */
+
 .successMessage {
   text-align: center;
   padding: 20px;

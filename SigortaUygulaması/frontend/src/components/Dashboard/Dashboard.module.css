@@ -2,35 +2,79 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   min-height: 100vh;
-  position: relative;
+  box-sizing: border-box;
 }
 
-.logoutButton {
-  z-index: 10;
+.profileMenu {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 4px 11px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 170px;
-  margin-bottom: 0.8rem;
+  right: 15px;
+  top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  background-color: #219ebc;
+  padding: 10px;
+  color: #fff;
+  border-radius: 0.7rem;
+  font-size: 13px;
 }
 
-.logoutButton:hover {
-  background-color: #e2e6ea;
+.profileInfo {
+  display: flex;
+  align-items: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.profileIcon {
+  margin-right: 5px;
+}
+
+.dropdownMenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 200px;
+  z-index: 1000;
+}
+
+.dropdownMenu.active {
+  display: block;
+}
+
+.dropdownMenu a,
+.dropdownMenu button {
+  display: block;
+  padding: 4px;
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.dropdownMenu a:hover,
+.dropdownMenu button:hover {
+  background-color: #f1f1f1;
+}
+
+/* Menü Sonu */
+.dropdownMenu button:last-child {
+  border-bottom: none;
+  background-color: red;
 }
 
 .menu {
   display: flex;
   justify-content: space-between;
   background: #f8f9fa;
-  padding: 15px;
+  padding: 6px;
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
@@ -62,22 +106,6 @@
 .menu button:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
-}
-
-.welcomeMessage {
-  font-size: 2em;
-  color: #333;
-  text-align: center;
-  margin-top: 100px;
-}
-
-.welcome {
-  position: absolute;
-  top: 0px;
-  right: 0%;
-  transform: translateX(-50%);
-  font-size: 0.9em;
-  font-weight: 600;
 }
 
 .tablesContainer {

@@ -29,7 +29,6 @@
   padding: 20px;
 }
 
-
 /* Select Row */
 .selectRow {
   margin-left: 9.6rem;
@@ -200,14 +199,6 @@ button:hover {
   border-radius: 4px;
 }
 
-.paymentLink {
-  display: block;
-  margin-top: 10px;
-  color: #004085;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
 .paymentLink:hover {
   color: #002752;
 }
@@ -220,4 +211,47 @@ button:hover {
   border: none;
   font-size: 20px;
   cursor: pointer;
+}
+
+.paymentLink {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #fff;
+  background-color: #007bff; /* Bootstrap blue color */
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.paymentLink:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: translateY(-2px); /* Lift effect */
+}
+
+/* Details Button Style */
+.detailsButton {
+  display: inline-block;
+  padding: 10px 20px;
+  width: 60%;
+  margin: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  background-color: #28a745; /* Green color */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.detailsButton:hover {
+  background-color: #218838; /* Darker green on hover */
+  transform: translateY(-2px); /* Lift effect */
+}
+
+.detailsButton:focus {
+  outline: none; /* Remove focus outline */
 }

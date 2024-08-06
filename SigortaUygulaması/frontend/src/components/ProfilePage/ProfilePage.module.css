@@ -1,0 +1,110 @@
+.profileContainer {
+  max-width: 400px;
+  margin: 5rem auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.backButton {
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  width: 120px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background-color: #0056b3;
+}
+.profileDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+input {
+  padding: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  color: #333;
+  width: 100%;
+}
+
+input:disabled {
+  background-color: #f5f5f5;
+  color: #888;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+}
+
+.saveButton,
+.cancelButton,
+.editButton {
+  padding: 10px 20px;
+  margin: auto 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 10px;
+}
+
+.saveButton {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.cancelButton {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.editButton {
+  background-color: #007bff;
+  color: #fff;
+  width: 100%;
+}
+
+.saveButton:hover,
+.cancelButton:hover,
+.editButton:hover {
+  opacity: 0.9;
+}
+.successMessage {
+  margin-bottom: 20px;
+  padding: 10px;
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 1em;
+}

@@ -24,15 +24,22 @@ exports.createPolicy = async (req, res) => {
       plakaKodu,
       motorNo,
       sasiNo,
+      prim,
       bransKodu,
       musteriNo,
       userId,
       username,
+      binaBilgileri,
     } = req.body;
 
-    const selectedCar = await Car.findById(carId);
-    if (!selectedCar) {
-      return res.status(404).json({ message: "Car NOT FOUND" });
+    let selectedCar;
+    let newCarPolicy;
+
+    if (bransKodu === "310" || bransKodu === "340") {
+      selectedCar = await Car.findById(carId);
+      if (!selectedCar) {
+        return res.status(404).json({ message: "Car NOT FOUND" });
+      }
     }
 
     // Fetch customer information
@@ -41,7 +48,7 @@ exports.createPolicy = async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    //  Unique poliçe no oluşturma
+    // Unique poliçe no oluşturma
     let policeNo;
     let isUnique = false;
     while (!isUnique) {
@@ -51,12 +58,8 @@ exports.createPolicy = async (req, res) => {
         isUnique = true;
       }
     }
-    // Prim = Kasko Değerinin yüzde 10'u
-    const prim = selectedCar.kasko * 0.1;
 
     const baslangicTarihi = new Date();
-
-    // Bitiş tarihi başlangıç tarihine 15 gün eklenmiş hali
     const bitisTarihi = new Date(baslangicTarihi);
     bitisTarihi.setDate(baslangicTarihi.getDate() + 15);
 
@@ -69,7 +72,6 @@ exports.createPolicy = async (req, res) => {
       },
       status: "T",
       bransKodu,
-
       prim,
       onaylayan: {
         id: userId,
@@ -78,27 +80,34 @@ exports.createPolicy = async (req, res) => {
       tanzimTarihi: new Date(),
       baslangicTarihi,
       bitisTarihi,
+      binaBilgileri: bransKodu === "199" ? binaBilgileri : null,
     });
 
     await newPolicy.save();
 
-    const newCarPolicy = new CarPolicy({
-      policeNo: newPolicy.policeNo,
-      policy: newPolicy,
-      plakaIlKodu,
-      plakaKodu,
-      aracMarka: selectedCar.brand,
-      aracModel: selectedCar.model,
-      aracModelYili: selectedCar.modelYear,
-      motorNo,
-      sasiNo,
-    });
+    if (bransKodu === "310" || bransKodu === "340") {
+      newCarPolicy = new CarPolicy({
+        policeNo: newPolicy.policeNo,
+        policy: newPolicy,
+        plakaIlKodu,
+        plakaKodu,
+        aracMarka: selectedCar.brand,
+        aracModel: selectedCar.model,
+        aracModelYili: selectedCar.modelYear,
+        motorNo,
+        sasiNo,
+      });
 
-    await newCarPolicy.save();
+      await newCarPolicy.save();
 
-    res
-      .status(201)
-      .json({ message: "Poliçe Oluşturuldu", newPolicy, newCarPolicy });
+      return res.status(201).json({
+        message: "Kasko Trafik poliçe oluşturuldu",
+        newPolicy,
+        newCarPolicy,
+      });
+    } else {
+      return res.status(201).json({ message: "Poliçe Oluşturuldu", newPolicy });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Sunucu Hatası" });

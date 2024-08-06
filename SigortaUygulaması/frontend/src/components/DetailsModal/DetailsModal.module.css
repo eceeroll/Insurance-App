@@ -8,16 +8,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1100;
 }
-
-/* .modal {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 500px;
-  width: 100%;
-  position: relative;
-} */
 
 .modal {
   position: fixed;
@@ -32,6 +24,7 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1200;
 }
 
 .closeButton {

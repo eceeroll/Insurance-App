@@ -85,3 +85,39 @@ exports.forgotPassword = async (req, res) => {
     res.status(500).json({ message: "Bir hata oluştu." });
   }
 };
+
+exports.changePassword = async (req, res) => {
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+
+  console.log(req.body);
+
+  const userId = req.user.id;
+
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ message: "Şifreler Eşleşmiyor" });
+  }
+
+  try {
+    const user = await User.findById(userId);
+
+    if (newPassword.length < 8) {
+      return res
+        .status(400)
+        .json({ message: "Yeni şifre en az 8 karakter olmalıdır." });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Şifre Yanlış" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Şifre Güncellendi" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Şifre yenileme işlemi başarısız" });
+  }
+};

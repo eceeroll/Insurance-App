@@ -5,6 +5,7 @@ import PDFComponent from "../PDFComponent/PDFComponent";
 import axios from "axios";
 import styles from "./SearchPolicy.module.css";
 import { ProductCodes } from "../../productCodes";
+import { useNavigate } from "react-router-dom";
 
 export default function SearchPolicy() {
   const token = localStorage.getItem("token");
@@ -22,8 +23,11 @@ export default function SearchPolicy() {
   const [carDetails, setCarDetails] = useState(null);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
 
+  const navigate = useNavigate();
+
   const pdfContentRef = useRef();
 
+  // Sayfa yüklendiğinde poliçe ve müşterileri çek
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(
@@ -52,6 +56,7 @@ export default function SearchPolicy() {
     fetchData();
   }, [token]);
 
+  // Filtreleme arama sıralama işlemleri yapıldığında verileri güncelle
   useEffect(() => {
     let filtered = policies;
 
@@ -93,6 +98,7 @@ export default function SearchPolicy() {
     policies,
   ]);
 
+  // pdf oluştur
   const generatePDF = async (policy) => {
     setTimeout(() => {
       setIsPdfHidden(true);
@@ -184,9 +190,10 @@ export default function SearchPolicy() {
     }, 0); // Render işlemi tamamlanana kadar kısa bir gecikme ekler
   };
 
-  const handleMakePayment = (policyId) => {
-    // Ödeme yapma sayfasına yönlendirme
-    console.log(`Ödeme yapma için poliçe ID: ${policyId}`);
+  // Ödeme yapma sayfasına yönlendirme
+  const handleMakePayment = (policy) => {
+    const { id, prim } = policy;
+    navigate(`/odeme-sayfasi?id=${id}&prim=${prim}`);
   };
 
   return (
@@ -276,7 +283,11 @@ export default function SearchPolicy() {
                     </button>
                   )}
                   {policy.status === "T" && (
-                    <button onClick={() => handleMakePayment(policy._id)}>
+                    <button
+                      onClick={() =>
+                        handleMakePayment({ id: policy._id, prim: policy.prim })
+                      }
+                    >
                       Ödeme Yap
                     </button>
                   )}

@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import { ProductCodes } from "../../productCodes.js";
+import DetailsModal from "../DetailsModal/DetailsModal.jsx";
 import Modal from "react-modal";
 import styles from "./CreatePolicy.module.css";
 import axios from "axios";
@@ -20,6 +21,7 @@ export default function CreatePolicy() {
   const [modelYears, setModelYears] = useState([]);
   const [selectedCarId, setSelectedCarId] = useState("");
   const [offerAmount, setOfferAmount] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [kaskoValue, setKaskoValue] = useState(null);
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
   const [formData, setFormData] = useState({});
@@ -28,6 +30,9 @@ export default function CreatePolicy() {
   const [alertMessage, setAlertMessage] = useState("");
   const [policyId, setPolicyId] = useState(null);
   const [policyPrim, setPolicyPrim] = useState(null);
+  const [showPolicyDetails, setShowPolicyDetails] = useState(false);
+  const [detailsContent, setDetailsContent] = useState(null);
+  const [buttonsVisible, setButtonsVisible] = useState(true);
 
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
@@ -40,15 +45,29 @@ export default function CreatePolicy() {
     const carId = selectedCarId;
 
     try {
-      const data = {
-        ...formData,
-        carId,
-        musteriNo,
-        prim: offerAmount,
-        userId,
-        username,
-        bransKodu: selectedProduct,
-      };
+      let data;
+      if ((selectedProduct === "310") | (selectedProduct === "340")) {
+        data = {
+          ...formData,
+          carId,
+          musteriNo,
+          prim: offerAmount,
+          userId,
+          username,
+          bransKodu: selectedProduct,
+        };
+      } else if (selectedProduct === "199") {
+        data = {
+          binaBilgileri: formData,
+          musteriNo,
+          prim: offerAmount,
+          userId,
+          username,
+          bransKodu: selectedProduct,
+        };
+      }
+
+      console.log("DATA:", data);
 
       const response = await axios.post(
         "http://localhost:5000/api/policy/yeni-police",
@@ -61,16 +80,36 @@ export default function CreatePolicy() {
       );
 
       if (response.status === 201) {
+        console.log("Response 201");
+        console.log(response.data);
         const policyExpiryDate = new Date();
         policyExpiryDate.setDate(policyExpiryDate.getDate() + 15);
 
         const { _id } = response.data.newPolicy;
+        const { newPolicy } = response.data;
         setPolicyId(_id);
         setPolicyPrim(offerAmount);
         setExpiryDate(policyExpiryDate.toLocaleDateString());
 
         setIsPolicyCreated(true);
-        // setIsOfferModalOpen(false);
+        setButtonsVisible(false);
+
+        const detailsContent = (
+          <>
+            <h2>Poliçe Detayları</h2>
+            <p>
+              <strong>Poliçe No:</strong> {newPolicy.policeNo}
+            </p>
+            <p>
+              <strong>Başlangıç Tarihi:</strong> {newPolicy.baslangicTarihi}
+            </p>
+            <p>
+              <strong>Bitiş Tarihi:</strong> {newPolicy.bitisTarihi}{" "}
+            </p>
+          </>
+        );
+
+        setDetailsContent(detailsContent);
       }
     } catch (error) {
       console.error(error);
@@ -79,24 +118,67 @@ export default function CreatePolicy() {
 
   // Teklif Alma İşlemi
   const handleSubmit = async (values) => {
+    console.log("Form values:", values);
+
     try {
-      // form verilerini kaydet
       setFormData(values);
 
       // Kasko ve Prim Hesaplanır
-      const car = carData.find((car) => selectedCarId === car._id);
-      if (car) {
-        setKaskoValue(car.kasko);
-        const primValue = car.kasko * 0.1;
-        setOfferAmount(primValue);
+      if (selectedProduct === "310" || selectedProduct === "340") {
+        const car = carData.find((car) => selectedCarId === car._id);
+        if (car) {
+          setKaskoValue(car.kasko);
+          const primKasko = car.kasko * 0.1;
+          setOfferAmount(primKasko);
+          setIsModalOpen(false);
+          setIsOfferModalOpen(true);
+          formikKaskoTrafik.resetForm();
+        }
+      } else if (selectedProduct === "199") {
+        const primDask = values.binaMetreKare * 10;
+        setOfferAmount(primDask);
+        setIsModalOpen(false);
         setIsOfferModalOpen(true);
+        formikDask.resetForm();
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error during form submission:", error);
     }
   };
 
-  const formik = useFormik({
+  const formikDask = useFormik({
+    initialValues: {
+      uavtAdresKodu: "",
+      binaMetreKare: "",
+      binaKat: "",
+      yapiTarzi: "",
+      insaYili: "",
+      hasarDurumu: "",
+    },
+    validationSchema: Yup.object({
+      uavtAdresKodu: Yup.string()
+        .max(10, "UAVT adres kodu 10 haneden uzun olmamalıdır.")
+        .required("UAVT adres kodu gereklidir."),
+      // DASK
+      binaMetreKare: Yup.number()
+        .positive("Bina metre kare değeri negatif olamaz.")
+        .required("Bina metre kare gereklidir."),
+      binaKat: Yup.number()
+        .positive("Bina kat değeri negatif olamaz.")
+        .required("Bina kat gereklidir."),
+      yapiTarzi: Yup.string().required("Yapı tarzı gereklidir."),
+      insaYili: Yup.number()
+        .positive("İnşa yılı negatif olamaz.")
+        .integer("İnşa yılı geçerli bir yıl olmalıdır.")
+        .min(1000, "İnşa yılı 4 haneli olmalıdır.")
+        .max(9999, "İnşa yılı 4 haneli olmalıdır.")
+        .required("İnşa yılı gereklidir."),
+      hasarDurumu: Yup.string().required("Hasar durumu gereklidir."),
+    }),
+    onSubmit: handleSubmit,
+  });
+
+  const formikKaskoTrafik = useFormik({
     initialValues: {
       plakaIlKodu: "",
       plakaKodu: "",
@@ -177,6 +259,7 @@ export default function CreatePolicy() {
   const closeOfferModal = () => {
     setIsOfferModalOpen(false);
     setIsPolicyCreated(false);
+    setButtonsVisible(true);
   };
 
   // Marka seçimi yapıldıktan sonra modelleri listeler
@@ -224,6 +307,11 @@ export default function CreatePolicy() {
   const handleCloseModal = (resetForm) => {
     resetForm();
     setIsModalOpen(false);
+    setButtonsVisible(true);
+  };
+
+  const handleClosePolicyDetails = () => {
+    setShowPolicyDetails(false);
   };
 
   return (
@@ -268,126 +356,270 @@ export default function CreatePolicy() {
         </button>
       </div>
       {/* Form Doldurma - KASKO - TRAFİK */}
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={() => handleCloseModal(formik.resetForm)}
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-        contentLabel="Policy Form Modal"
-      >
-        <form onSubmit={formik.handleSubmit}>
-          <div className={styles.inputRow}>
-            <div className={styles.inputContainer}>
-              <label htmlFor="plakaIlKodu">Plaka İl Kodu:</label>
-              <input
-                type="text"
-                id="plakaIlKodu"
-                name="plakaIlKodu"
-                value={formik.values.plakaIlKodu}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              {formik.touched.plakaIlKodu && formik.errors.plakaIlKodu ? (
-                <div className={styles.error}>{formik.errors.plakaIlKodu}</div>
-              ) : null}
+      {(selectedProduct === "310" || selectedProduct === "340") && (
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={() => handleCloseModal(formikKaskoTrafik.resetForm)}
+          className={styles.modal}
+          overlayClassName={styles.overlay}
+          contentLabel="Policy Form Modal"
+        >
+          <form onSubmit={formikKaskoTrafik.handleSubmit}>
+            <div className={styles.inputRow}>
+              <div className={styles.inputContainer}>
+                <label htmlFor="plakaIlKodu">Plaka İl Kodu:</label>
+                <input
+                  type="text"
+                  id="plakaIlKodu"
+                  name="plakaIlKodu"
+                  value={formikKaskoTrafik.values.plakaIlKodu}
+                  onChange={formikKaskoTrafik.handleChange}
+                  onBlur={formikKaskoTrafik.handleBlur}
+                />
+                {formikKaskoTrafik.touched.plakaIlKodu &&
+                formikKaskoTrafik.errors.plakaIlKodu ? (
+                  <div className={styles.error}>
+                    {formikKaskoTrafik.errors.plakaIlKodu}
+                  </div>
+                ) : null}
+              </div>
+              <div className={styles.inputContainer}>
+                <label htmlFor="plakaKodu">Plaka Kodu:</label>
+                <input
+                  type="text"
+                  id="plakaKodu"
+                  name="plakaKodu"
+                  value={formikKaskoTrafik.values.plakaKodu}
+                  onChange={formikKaskoTrafik.handleChange}
+                  onBlur={formikKaskoTrafik.handleBlur}
+                />
+                {formikKaskoTrafik.touched.plakaKodu &&
+                formikKaskoTrafik.errors.plakaKodu ? (
+                  <div className={styles.error}>
+                    {formikKaskoTrafik.errors.plakaKodu}
+                  </div>
+                ) : null}
+              </div>
             </div>
-            <div className={styles.inputContainer}>
-              <label htmlFor="plakaKodu">Plaka Kodu:</label>
-              <input
-                type="text"
-                id="plakaKodu"
-                name="plakaKodu"
-                value={formik.values.plakaKodu}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              {formik.touched.plakaKodu && formik.errors.plakaKodu ? (
-                <div className={styles.error}>{formik.errors.plakaKodu}</div>
-              ) : null}
-            </div>
-          </div>
-          <div className={styles.inputRow}>
-            <div className={styles.inputContainer}>
-              <label htmlFor="brand">Marka:</label>
-              <select
-                id="brand"
-                value={selectedBrand}
-                onChange={handleBrandChange}
-              >
-                <option value="">Seçiniz</option>
-                {[...new Set(carData.map((car) => car.brand))].map(
-                  (brand, index) => (
-                    <option key={index} value={brand}>
-                      {brand}
+            <div className={styles.inputRow}>
+              <div className={styles.inputContainer}>
+                <label htmlFor="brand">Marka:</label>
+                <select
+                  id="brand"
+                  value={selectedBrand}
+                  onChange={handleBrandChange}
+                >
+                  <option value="">Seçiniz</option>
+                  {[...new Set(carData.map((car) => car.brand))].map(
+                    (brand, index) => (
+                      <option key={index} value={brand}>
+                        {brand}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+              <div className={styles.inputContainer}>
+                <label htmlFor="model">Model:</label>
+                <select
+                  id="model"
+                  value={selectedModel}
+                  onChange={handleModelChange}
+                >
+                  <option value="">Seçiniz</option>
+                  {models.map((model, index) => (
+                    <option key={index} value={model}>
+                      {model}
                     </option>
-                  )
-                )}
-              </select>
+                  ))}
+                </select>
+              </div>
             </div>
-            <div className={styles.inputContainer}>
-              <label htmlFor="model">Model:</label>
-              <select
-                id="model"
-                value={selectedModel}
-                onChange={handleModelChange}
-              >
-                <option value="">Seçiniz</option>
-                {models.map((model, index) => (
-                  <option key={index} value={model}>
-                    {model}
-                  </option>
-                ))}
-              </select>
+            <div className={styles.inputRow}>
+              <div className={styles.inputContainer}>
+                <label htmlFor="modelYear">Model Yılı:</label>
+                <select onChange={handleModelYearChange} id="modelYear">
+                  <option value="">Seçiniz</option>
+                  {modelYears.map((year, index) => (
+                    <option key={index} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-          </div>
-          <div className={styles.inputRow}>
-            <div className={styles.inputContainer}>
-              <label htmlFor="modelYear">Model Yılı:</label>
-              <select onChange={handleModelYearChange} id="modelYear">
-                <option value="">Seçiniz</option>
-                {modelYears.map((year, index) => (
-                  <option key={index} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+            <div className={styles.inputRow}>
+              <div className={styles.inputContainer}>
+                <label htmlFor="motorNo">Motor No:</label>
+                <input
+                  type="text"
+                  maxLength="10"
+                  id="motorNo"
+                  name="motorNo"
+                  value={formikKaskoTrafik.values.motorNo}
+                  onChange={formikKaskoTrafik.handleChange}
+                  onBlur={formikKaskoTrafik.handleBlur}
+                />
+                {formikKaskoTrafik.touched.motorNo &&
+                formikKaskoTrafik.errors.motorNo ? (
+                  <div className={styles.error}>
+                    {formikKaskoTrafik.errors.motorNo}
+                  </div>
+                ) : null}
+              </div>
+              <div className={styles.inputContainer}>
+                <label htmlFor="sasiNo">Şasi No:</label>
+                <input
+                  type="text"
+                  maxLength="12"
+                  id="sasiNo"
+                  name="sasiNo"
+                  value={formikKaskoTrafik.values.sasiNo}
+                  onChange={formikKaskoTrafik.handleChange}
+                  onBlur={formikKaskoTrafik.handleBlur}
+                />
+                {formikKaskoTrafik.touched.sasiNo &&
+                formikKaskoTrafik.errors.sasiNo ? (
+                  <div className={styles.error}>
+                    {formikKaskoTrafik.errors.sasiNo}
+                  </div>
+                ) : null}
+              </div>
             </div>
-          </div>
-          <div className={styles.inputRow}>
-            <div className={styles.inputContainer}>
-              <label htmlFor="motorNo">Motor No:</label>
-              <input
-                type="text"
-                maxLength="10"
-                id="motorNo"
-                name="motorNo"
-                value={formik.values.motorNo}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              {formik.touched.motorNo && formik.errors.motorNo ? (
-                <div className={styles.error}>{formik.errors.motorNo}</div>
-              ) : null}
+            <button type="submit">Teklif Al</button>
+          </form>
+        </Modal>
+      )}
+      {/* Form Doldurma - DASK */}
+      {selectedProduct === "199" && (
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={() => handleCloseModal(formikDask.resetForm)}
+          className={styles.modal}
+          overlayClassName={styles.overlay}
+          contentLabel="Policy Form Modal"
+        >
+          <form onSubmit={formikDask.handleSubmit}>
+            <div className={styles.inputRow}>
+              <div className={styles.inputContainer}>
+                <label htmlFor="uavtAdresKodu">UAVT Adres Kodu:</label>
+                <input
+                  type="text"
+                  id="uavtAdresKodu"
+                  name="uavtAdresKodu"
+                  maxLength="10"
+                  value={formikDask.values.uavtAdresKodu}
+                  onChange={formikDask.handleChange}
+                  onBlur={formikDask.handleBlur}
+                />
+                {formikDask.touched.uavtAdresKodu &&
+                formikDask.errors.uavtAdresKodu ? (
+                  <div className={styles.error}>
+                    {formikDask.errors.uavtAdresKodu}
+                  </div>
+                ) : null}
+              </div>
+              <div className={styles.inputContainer}>
+                <label htmlFor="binaMetreKare">Bina Metre Kare:</label>
+                <input
+                  type="number"
+                  id="binaMetreKare"
+                  name="binaMetreKare"
+                  value={formikDask.values.binaMetreKare}
+                  onChange={formikDask.handleChange}
+                  onBlur={formikDask.handleBlur}
+                />
+                {formikDask.touched.binaMetreKare &&
+                formikDask.errors.binaMetreKare ? (
+                  <div className={styles.error}>
+                    {formikDask.errors.binaMetreKare}
+                  </div>
+                ) : null}
+              </div>
             </div>
-            <div className={styles.inputContainer}>
-              <label htmlFor="sasiNo">Şasi No:</label>
-              <input
-                type="text"
-                maxLength="12"
-                id="sasiNo"
-                name="sasiNo"
-                value={formik.values.sasiNo}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              {formik.touched.sasiNo && formik.errors.sasiNo ? (
-                <div className={styles.error}>{formik.errors.sasiNo}</div>
-              ) : null}
+            <div className={styles.inputRow}>
+              <div className={styles.inputContainer}>
+                <label htmlFor="binaKat">Bina Kat Sayısı</label>
+                <input
+                  type="number"
+                  id="binaKat"
+                  name="binaKat"
+                  value={formikDask.values.binaKat}
+                  onChange={formikDask.handleChange}
+                  onBlur={formikDask.handleBlur}
+                />
+                {formikDask.touched.binaKat && formikDask.errors.binaKat ? (
+                  <div className={styles.error}>
+                    {formikDask.errors.binaKat}
+                  </div>
+                ) : null}
+              </div>
+              <div className={styles.inputContainer}>
+                <label htmlFor="yapiTarzi">Yapı Tarzı:</label>
+                <select
+                  id="yapiTarzi"
+                  name="yapiTarzi"
+                  value={formikDask.values.yapiTarzi}
+                  onChange={formikDask.handleChange}
+                  onBlur={formikDask.handleBlur}
+                >
+                  <option value="">Seçiniz</option>
+                  <option value="daire">Daire</option>
+                  <option value="rezidans">Rezidans</option>
+                  <option value="villa">Villa</option>
+                  <option value="ofis">Ofis</option>
+                  <option value="mustakil">Müstakil Ev</option>
+                </select>
+                {formikDask.touched.yapiTarzi && formikDask.errors.yapiTarzi ? (
+                  <div className={styles.error}>
+                    {formikDask.errors.yapiTarzi}
+                  </div>
+                ) : null}
+              </div>
             </div>
-          </div>
-          <button type="submit">Teklif Al</button>
-        </form>
-      </Modal>
+            <div className={styles.inputRow}>
+              <div className={styles.inputContainer}>
+                <label htmlFor="insaYili">İnşa Yılı:</label>
+                <input
+                  type="number"
+                  id="insaYili"
+                  name="insaYili"
+                  value={formikDask.values.insaYili}
+                  onChange={formikDask.handleChange}
+                  onBlur={formikDask.handleBlur}
+                />
+                {formikDask.touched.insaYili && formikDask.errors.insaYili ? (
+                  <div className={styles.error}>
+                    {formikDask.errors.insaYili}
+                  </div>
+                ) : null}
+              </div>
+              <div className={styles.inputContainer}>
+                <label htmlFor="hasarDurumu">Hasar Durumu:</label>
+                <select
+                  id="hasarDurumu"
+                  name="hasarDurumu"
+                  value={formikDask.values.hasarDurumu}
+                  onChange={formikDask.handleChange}
+                  onBlur={formikDask.handleBlur}
+                >
+                  <option value="">Seçiniz</option>
+                  <option value="hasarsiz">Hasarsız</option>
+                  <option value="azHasarli">Az Hasarlı</option>
+                  <option value="cokHasarli">Çok Hasarlı</option>
+                </select>
+                {formikDask.touched.hasarDurumu &&
+                formikDask.errors.hasarDurumu ? (
+                  <div className={styles.error}>
+                    {formikDask.errors.hasarDurumu}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+            <button type="submit">Teklif Al</button>
+          </form>
+        </Modal>
+      )}
       {/* Teklif Göster */}
       <Modal
         isOpen={isOfferModalOpen}
@@ -397,23 +629,32 @@ export default function CreatePolicy() {
         contentLabel="Offer Modal"
       >
         <div className={styles.offerContainer}>
-          <p className={styles.offerText}>
-            Kasko Değeri: <strong>{kaskoValue} TL</strong>
-          </p>
+          {(selectedProduct === "310" || selectedProduct === "340") && (
+            <p className={styles.offerText}>
+              Kasko Değeri: <strong>{offerAmount} TL</strong>
+            </p>
+          )}
           <p className={styles.offerText}>
             Poliçe Teklifi: <strong>{offerAmount} TL</strong>
           </p>
-          <div className={styles.buttonRow}>
-            <button onClick={handleCreatePolicy} className={styles.button}>
-              Poliçeleştir
-            </button>
-            <button
-              onClick={closeOfferModal}
-              className={`${styles.button} ${styles.closeButton}`}
-            >
-              Kapat
-            </button>
-          </div>
+
+          {buttonsVisible && (
+            <div className={styles.buttonRow}>
+              <button
+                onClick={handleCreatePolicy}
+                className={`${styles.button} ${styles.createPolicyButton}`}
+              >
+                Poliçeleştir
+              </button>
+              <button
+                onClick={closeOfferModal}
+                className={`${styles.button} ${styles.closeButton}`}
+              >
+                Kapat
+              </button>
+            </div>
+          )}
+
           {/* Poliçe Oluşturuldu Mesajı */}
           {isPolicyCreated && (
             <>
@@ -427,10 +668,23 @@ export default function CreatePolicy() {
               >
                 Ödeme ekranına geçin
               </Link>
+              <button
+                className={styles.detailsButton}
+                onClick={() => setShowPolicyDetails(true)}
+              >
+                Poliçe Detaylarını Görüntüle
+              </button>
             </>
           )}
         </div>
       </Modal>
+      {/* Poliçe Detayları Modal */}
+      <DetailsModal
+        isOpen={showPolicyDetails}
+        className={styles.detailsModal}
+        content={detailsContent}
+        onClose={handleClosePolicyDetails}
+      />
     </div>
   );
 }

@@ -4,32 +4,12 @@ const binaBilgileriSchema = new mongoose.Schema({
   uavtAdresKodu: { type: String, maxlength: 10 },
   binaMetreKare: { type: Number, min: 0 },
   binaKat: { type: Number, min: 0 },
-  yapıTarzı: {
+  yapiTarzi: {
     type: String,
-    enum: [
-      "Daire",
-      "Rezidans",
-      "Villa",
-      "Müstakil Ev",
-      "Ofis",
-      "Mağaza",
-      "Dükkan",
-      "İş Merkezi",
-      "Yurt",
-      "Okul",
-      "Hastane",
-      "Fabrika",
-      "Depo",
-      "Atölye",
-      "Otel",
-      "Pansiyon",
-      "Tatıl Köyü",
-    ],
   },
-  inşaYılı: { type: Number, minlength: 4, maxlength: 4 },
+  insaYili: { type: Number, minlength: 4, maxlength: 4 },
   hasarDurumu: {
     type: String,
-    enum: ["Hasarsız", "Az Hasarlı", "Çok Hasarlı"],
   },
 });
 
@@ -63,14 +43,14 @@ const policySchema = new mongoose.Schema({
   binaBilgileri: { type: binaBilgileriSchema, default: null },
 });
 
-// policySchema.pre("save", function (next) {
-//   if (this.bransKodu === "310" || this.bransKodu === "340") {
-//     if (!this.binaBilgileri) {
-//       return next(new Error("BinaBilgileri is required for DASK policies."));
-//     }
-//   }
-//   next();
-// });
+policySchema.pre("save", function (next) {
+  if (this.bransKodu === "199") {
+    if (!this.binaBilgileri) {
+      return next(new Error("BinaBilgileri is required for DASK policies."));
+    }
+  }
+  next();
+});
 
 const Policy = mongoose.model("Policy", policySchema);
 

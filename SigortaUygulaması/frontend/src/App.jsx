@@ -13,6 +13,8 @@ import CreatePolicy from "./components/CreatePolicy/CreatePolicy";
 import PaymentPage from "./components/PaymentPage/PaymentPage";
 import ManagePolicies from "./components/AdminPanel/ManagePolicies";
 import SearchPolicy from "./components/SearchPolicy/SearchPolicy";
+import ProfilePage from "./components/ProfilePage/ProfilePage";
+import ChangePassword from "./components/ProfilePage/ChangePassword";
 
 function App() {
   return (
@@ -81,6 +83,22 @@ function App() {
           element={
             <ProtectedRoute>
               <SearchPolicy />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sifre-yenile"
+          element={
+            <ProtectedRoute>
+              <ChangePassword />
             </ProtectedRoute>
           }
         />
