@@ -187,7 +187,7 @@ export default function Dashboard() {
         Çıkış Yap
       </button>
       <div className={styles.welcome}>
-        {currentUser.firstName} {currentUser.lastName} olarak giriş yaptınız
+        {currentUser.firstName} {currentUser.lastName}
       </div>
       <div className={styles.menu}>
         <button onClick={() => handleNavigation("/yeni-musteri")}>

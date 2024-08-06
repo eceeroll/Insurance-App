@@ -63,14 +63,14 @@ const policySchema = new mongoose.Schema({
   binaBilgileri: { type: binaBilgileriSchema, default: null },
 });
 
-policySchema.pre("save", function (next) {
-  if (this.bransKodu === "310" || this.bransKodu === "340") {
-    if (!this.binaBilgileri) {
-      return next(new Error("BinaBilgileri is required for DASK policies."));
-    }
-  }
-  next();
-});
+// policySchema.pre("save", function (next) {
+//   if (this.bransKodu === "310" || this.bransKodu === "340") {
+//     if (!this.binaBilgileri) {
+//       return next(new Error("BinaBilgileri is required for DASK policies."));
+//     }
+//   }
+//   next();
+// });
 
 const Policy = mongoose.model("Policy", policySchema);
 
