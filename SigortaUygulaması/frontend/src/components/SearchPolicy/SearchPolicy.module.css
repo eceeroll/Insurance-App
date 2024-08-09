@@ -77,13 +77,7 @@ td {
   cursor: not-allowed;
 }
 
-.pdfdiv {
-  display: block;
+.pdfContainer {
   position: absolute;
-  top: -10%;
-  left: -10%;
-}
-
-.hidden {
-  display: none;
+  top: -1000%;
 }

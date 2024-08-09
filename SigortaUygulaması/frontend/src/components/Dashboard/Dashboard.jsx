@@ -21,7 +21,6 @@ export default function Dashboard() {
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [carDetails, setCarDetails] = useState(null);
   const [customerDetails, setCustomerDetails] = useState(null);
-  const [isPdfHidden, setIsPdfHidden] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const pdfContentRef = useRef(null);
@@ -57,11 +56,6 @@ export default function Dashboard() {
   }, [token]);
 
   const generatePDF = async (policy) => {
-    // 3 saniye bekle ve sonra `pdfdiv`'in `hidden` sınıfını ayarla
-    setTimeout(() => {
-      setIsPdfHidden(true);
-    }, 500); // 3 saniye
-
     if (!policy) {
       console.error("Policy not provided");
       return;
@@ -103,6 +97,8 @@ export default function Dashboard() {
       html2canvas(input)
         .then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
+          console.log("Canvas dimensions:", canvas.width, canvas.height); // Boyutları kontrol et
+          console.log("Image data:", imgData); // Veri URL'sini kontrol et
           const pdf = new jsPDF("p", "mm", "a4");
 
           // Set font to Helvetica (a simple font)
@@ -289,11 +285,7 @@ export default function Dashboard() {
         </div>
       </div>
       {selectedPolicy && customerDetails && (
-        <div
-          className={
-            isPdfHidden ? `${styles.pdfdiv} ${styles.hidden}` : styles.pdfdiv
-          }
-        >
+        <div className={styles.pdfContainer}>
           <PDFComponent
             ref={pdfContentRef}
             carInfo={carDetails}

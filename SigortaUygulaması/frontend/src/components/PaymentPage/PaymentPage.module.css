@@ -138,8 +138,19 @@
   margin-bottom: 10px;
 }
 
-.pdfcontent {
+.pdfContainer {
   position: absolute;
   top: -100%;
   left: -100%;
+}
+.error {
+  color: #ff4d4f; /* Kırmızı renkte hata mesajı */
+  background-color: #fff1f0; /* Açık kırmızı arka plan */
+  border: 1px solid #ffa39e; /* Kırmızı tonlarında bir sınır */
+  padding: 10px; /* İç boşluk */
+  margin-bottom: 15px; /* Alt boşluk */
+  border-radius: 4px; /* Köşeleri yuvarlat */
+  font-size: 14px; /* Yazı boyutu */
+  font-weight: bold; /* Kalın yazı */
+  text-align: center; /* Ortalanmış metin */
 }

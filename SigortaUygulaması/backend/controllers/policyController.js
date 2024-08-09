@@ -130,10 +130,14 @@ exports.findPolicyBydId = async (req, res) => {
       res.status(404).json({ message: "Poliçe Bulunamadı" });
     }
     let carDetails = null;
+    let buildingDetails = null;
     if (policy.bransKodu === "310" || policy.bransKodu === "340") {
       carDetails = await CarPolicy.findOne({ policeNo: policy.policeNo });
     }
-    res.json({ policy, carDetails });
+    if (policy.bransKodu === "199") {
+      buildingDetails = policy.binaBilgileri;
+    }
+    res.json({ policy, carDetails, buildingDetails });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Sunucu Hatası" });

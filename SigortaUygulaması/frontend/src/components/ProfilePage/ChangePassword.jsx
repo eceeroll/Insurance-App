@@ -3,14 +3,13 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import BackButton from "../BackButton";
 
 export default function ChangePassword() {
   const token = localStorage.getItem("token");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const navigate = useNavigate();
 
   const handleSubmit = async (values) => {
     try {
@@ -60,9 +59,7 @@ export default function ChangePassword() {
 
   return (
     <div className={styles.changePasswordContainer}>
-      <button onClick={() => navigate(-1)} className={styles.backButton}>
-        Geri
-      </button>
+      <BackButton />
       <h1>Şifre Yenile</h1>
       {successMessage && (
         <div className={styles.successMessage}>{successMessage}</div>

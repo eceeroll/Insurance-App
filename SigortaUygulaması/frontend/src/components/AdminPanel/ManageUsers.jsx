@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./ManageUsers.module.css";
+import BackButton from "../BackButton";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -119,6 +120,7 @@ const ManageUsers = () => {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Kullanıcı Yönetimi</h2>
+      <BackButton />
       <table className={styles.table}>
         <thead>
           <tr>

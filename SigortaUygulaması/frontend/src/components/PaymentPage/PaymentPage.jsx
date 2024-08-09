@@ -8,8 +8,8 @@ import styles from "./PaymentPage.module.css";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import PDFComponent from "../PDFComponent/PDFComponent";
+import BackButton from "../BackButton";
 
-// Modal için stil dosyalarını ayarlayın
 Modal.setAppElement("#root");
 
 const PaymentPage = () => {
@@ -20,23 +20,27 @@ const PaymentPage = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [carDetails, setCarDetails] = useState(null);
+  const [buildingDetails, setBuildingDetails] = useState(null);
   const [customerDetails, setCustomerDetails] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isValid, setIsValid] = useState(false);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const pdfContentRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const token = localStorage.getItem("token");
 
-  // URL'den parametreleri al
+  // URL'den parametreler alınır
   const searchParams = new URLSearchParams(location.search);
   const policyId = searchParams.get("id");
   const prim = searchParams.get("prim");
 
-  // Ödeme işlemi başarılı olduğunda modal'ı aç
+  // Ödeme işlemi başarılı olduğunda
   const handlePaymentSuccess = () => {
     setModalIsOpen(true);
   };
 
-  // Modal'ı kapat
+  // ödeme başarılı modal i kapatılır
   const closeModal = () => {
     setModalIsOpen(false);
     navigate("/dashboard");
@@ -58,7 +62,11 @@ const PaymentPage = () => {
         }
       );
 
-      const { policy: detailedPolicy, carDetails } = response.data;
+      const {
+        policy: detailedPolicy,
+        carDetails,
+        buildingDetails: binaBilgileri,
+      } = response.data;
 
       const customerResponse = await axios.get(
         `http://localhost:5000/api/customers/musteri-ara/${detailedPolicy.musteriBilgileri.musteriNo}`,
@@ -68,7 +76,7 @@ const PaymentPage = () => {
           },
         }
       );
-
+      setBuildingDetails(binaBilgileri);
       setCustomerDetails(customerResponse.data);
       setSelectedPolicy(detailedPolicy);
       setCarDetails(carDetails);
@@ -90,17 +98,42 @@ const PaymentPage = () => {
     setCardNumber(formattedValue);
   };
 
-  // Ay / Yıl olarak formatla
+  // Ay / Yıl olarak formatla ve validasyon yap
   const handleExpiryDateChange = (e) => {
     let value = e.target.value.replace(/\D/g, "");
+
     if (value.length >= 3) {
-      value = value.slice(0, 2) + " / " + value.slice(2, 4);
+      // mevcut yılın son 2 hanesi
+      const currentYear = new Date().getFullYear().toString().slice(2, 4);
+      let enteredMonth = value.slice(0, 2);
+      let enteredYear = value.slice(2, 4);
+      let isValidDate = true;
+
+      if (parseInt(enteredMonth, 10) < 1 || parseInt(enteredMonth, 10) > 12) {
+        setErrorMessage("Lütfen geçerli bir Ay (01-12) değeri giriniz");
+        isValidDate = false;
+      }
+      if (
+        enteredYear &&
+        parseInt(enteredYear, 10) < parseInt(currentYear, 10)
+      ) {
+        setErrorMessage("Lütfen geçerli bir yıl giriniz");
+        isValidDate = false;
+      }
+      setIsValid(isValidDate);
+      value = enteredMonth + " / " + enteredYear;
     }
     setExpiryDate(value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setIsFormSubmitted(true);
+
+    if (!isValid) {
+      return;
+    }
 
     // Ödeme işlemi tamamlandıktan sonra, ilgili policy status'ünü güncelle
     const response = await fetch(
@@ -118,17 +151,18 @@ const PaymentPage = () => {
     if (response.ok) {
       handlePaymentSuccess();
     } else {
-      alert("Ödeme işlemi sırasında bir hata oluştu.");
+      setErrorMessage("Sunucu kaynaklı bir hata oluştu.");
     }
   };
 
+  // kart numarası 4erli olarak ayrılır
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("tr-TR").format(amount);
   };
 
-  // State güncellendikten sonra PDF oluşturma işlemini başlat
+  // State güncellendikten sonra PDF oluşturma işlemi
   useEffect(() => {
-    if (selectedPolicy && carDetails && customerDetails) {
+    if (selectedPolicy && customerDetails) {
       const input = pdfContentRef.current;
 
       if (!input) {
@@ -186,11 +220,17 @@ const PaymentPage = () => {
           });
       }, 1000);
     }
-  }, [selectedPolicy, carDetails, customerDetails]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPolicy, customerDetails]);
 
   return (
     <div className={styles["payment-container"]}>
       <h1>Ödeme Ekranı</h1>
+      <BackButton />
+      {/* ödeme formu */}
+      {errorMessage && isFormSubmitted && (
+        <div className={styles.error}>{errorMessage}</div>
+      )}
       <form onSubmit={handleSubmit} className={styles["payment-form"]}>
         <div className={styles["form-group"]}>
           <input
@@ -237,6 +277,7 @@ const PaymentPage = () => {
         </button>
       </form>
 
+      {/* ödeme başarılı modal */}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -262,13 +303,16 @@ const PaymentPage = () => {
         </div>
       </Modal>
 
+      {/* Detaylar PDF */}
       {selectedPolicy && customerDetails && (
-        <div className={styles.pdfcontent} ref={pdfContentRef}>
+        <div className={styles.pdfContainer}>
           <PDFComponent
+            ref={pdfContentRef}
             carInfo={carDetails}
+            buildingInfo={buildingDetails}
             policyInfo={selectedPolicy}
             customerInfo={customerDetails}
-            bransKodu={selectedPolicy?.bransKodu}
+            bransKodu={selectedPolicy.bransKodu}
           />
         </div>
       )}

@@ -158,7 +158,7 @@ td {
 
 @media (max-width: 768px) {
   .tablesContainer {
-    flex-direction: column; 
+    flex-direction: column;
   }
 
   .tableSection {
@@ -168,24 +168,21 @@ td {
 
 .policyDetailsContainer {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   margin: 20px 0;
   font-size: 21px;
 }
 
 .policyDetails,
 .carDetails {
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 
 .policyDetails:last-child {
   margin-bottom: 0;
 }
 
-.pdfdiv {
-  display: block;
-}
-
-.hidden {
-  display: none;
+.pdfContainer {
+  position: absolute;
+  top: -1000%;
 }

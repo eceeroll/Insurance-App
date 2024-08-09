@@ -1,12 +1,14 @@
+import styles from "./CreatePolicy.module.css";
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { ProductCodes } from "../../productCodes.js";
 import DetailsModal from "../DetailsModal/DetailsModal.jsx";
 import Modal from "react-modal";
-import styles from "./CreatePolicy.module.css";
-import axios from "axios";
+import BackButton from "../BackButton.jsx";
+import { calculateAge } from "../../utils/calculateAge.js";
 
 export default function CreatePolicy() {
   const [products, setProducts] = useState([]);
@@ -33,32 +35,132 @@ export default function CreatePolicy() {
   const [showPolicyDetails, setShowPolicyDetails] = useState(false);
   const [detailsContent, setDetailsContent] = useState(null);
   const [buttonsVisible, setButtonsVisible] = useState(true);
-  const [selectedCustomerNo, setSelectedCustomerNo] = useState("");
 
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
 
-  const getCustomerInfo = async () => {
-    const response = await axios.get(
-      `http://localhost:5000/api/customers/musteri-ara/${selectedCustomer}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+  // müşteri bilgileri çek
+  const fetchCustomerData = async (customerId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/customers/musteri-ara/${customerId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    setSelectedCustomerNo(response.data.musteri_no);
+      const data = response.data;
+      return data;
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  };
+
+  // yaş faktörünü hesaplama ( sağlık poliçe için )
+  const getAgeFactor = (age) => {
+    if (age < 20) return 0; // 20 yaş altı için ek prim yok
+    if (age < 30) return 100;
+    if (age < 40) return 200;
+    if (age < 50) return 300;
+    return 500; // 50 yaş ve üstü için ek prim
+  };
+
+  const calculateHealthOffer = async (values) => {
+    // önce müşterinin yaşı hesaplanır
+    const customerData = await fetchCustomerData(selectedCustomer);
+    const { date_of_birth } = customerData;
+
+    const age = calculateAge(date_of_birth);
+
+    const {
+      alkolKullanimi,
+      ameliyat,
+      sporYapma,
+      sigaraKullanimi,
+      kronikHastalik,
+      ilacKullanimi,
+    } = values;
+
+    // risk katsayıları
+    const katsayilar = {
+      alkolKullanimi: 0.2,
+      ameliyat: 0.3,
+      // spor yapmak azaltır
+      sporYapma: -0.1,
+      sigaraKullanimi: 0.4,
+      kronikHastalik: 0.5,
+      ilacKullanimi: 0.2,
+    };
+
+    const ageFactor = getAgeFactor(age);
+
+    const riskFaktoruEtkiliMi = (value) => {
+      return value === "E" ? 1 : 0;
+    };
+
+    const toplamRisk =
+      riskFaktoruEtkiliMi(alkolKullanimi) * katsayilar.alkolKullanimi +
+      riskFaktoruEtkiliMi(ameliyat) * katsayilar.ameliyat +
+      riskFaktoruEtkiliMi(sporYapma) * katsayilar.sporYapma +
+      riskFaktoruEtkiliMi(sigaraKullanimi) * katsayilar.sigaraKullanimi +
+      riskFaktoruEtkiliMi(kronikHastalik) * katsayilar.kronikHastalik +
+      riskFaktoruEtkiliMi(ilacKullanimi) * katsayilar.ilacKullanimi;
+
+    const temelPrimMiktarı = 2000;
+
+    const kaskoTutari =
+      temelPrimMiktarı + temelPrimMiktarı * toplamRisk + ageFactor;
+
+    return kaskoTutari;
+  };
+
+  const calculateDaskOffer = (
+    insaYili,
+    binaKat,
+    binaMetreKare,
+    hasarDurumu
+  ) => {
+    const hasarIndirimleri = {
+      hasarsiz: 0,
+      azHasarli: 0.1,
+      cokHasarli: 0.3,
+    };
+
+    const currentYear = new Date().getFullYear();
+    const binaYasi = currentYear - insaYili;
+
+    // her yıl için yüzde 5 indirim
+    const insaYiliKatsayi = 0.05;
+    // metre kare başına 50
+    const metreKareKatsayi = 10;
+    // kat başına 500
+    const binaKatKatsayi = 200;
+    // hasarlı veya çok hasarlı için indirim
+    const hasarDurumuKatsayi = hasarIndirimleri[hasarDurumu] || 0;
+
+    // bina kat sayısı ve metrekareye göre kasko değeri
+    let kaskoTutari =
+      binaKat * binaKatKatsayi + binaMetreKare * metreKareKatsayi;
+
+    // metre kare başına yaş indirimi
+    kaskoTutari = kaskoTutari - insaYiliKatsayi * binaYasi * binaMetreKare;
+
+    // hasar durumu indirimi
+    kaskoTutari = kaskoTutari * (1 - hasarDurumuKatsayi);
+
+    // alt sınır 1000 tl ye ekle
+    return kaskoTutari + 1000;
   };
 
   // Poliçeleştirme İşlemi
   const handleCreatePolicy = async () => {
-    await getCustomerInfo();
     const userId = currentUser.id;
     const musteriNo = selectedCustomer;
     const carId = selectedCarId;
-    const musteriNumarasi = selectedCustomerNo;
 
     try {
       let data;
@@ -81,6 +183,15 @@ export default function CreatePolicy() {
           username,
           bransKodu: selectedProduct,
         };
+      } else if (selectedProduct === "610") {
+        data = {
+          ...formData,
+          musteriNo,
+          prim: offerAmount,
+          userId,
+          username,
+          bransKodu: selectedProduct,
+        };
       }
 
       console.log("DATA:", data);
@@ -96,8 +207,6 @@ export default function CreatePolicy() {
       );
 
       if (response.status === 201) {
-        console.log("Response 201");
-        console.log(response.data);
         const policyExpiryDate = new Date();
         policyExpiryDate.setDate(policyExpiryDate.getDate() + 15);
 
@@ -110,6 +219,7 @@ export default function CreatePolicy() {
         setIsPolicyCreated(true);
         setButtonsVisible(false);
 
+        // başlangıç bitiş tarihi ve poliçe no içeren modal içeriği
         const detailsContent = (
           <>
             <h2>Poliçe Detayları</h2>
@@ -117,10 +227,12 @@ export default function CreatePolicy() {
               <strong>Poliçe No:</strong> {newPolicy.policeNo}
             </p>
             <p>
-              <strong>Başlangıç Tarihi:</strong> {newPolicy.baslangicTarihi}
+              <strong>Başlangıç Tarihi:</strong>{" "}
+              {new Date(newPolicy.baslangicTarihi).toLocaleDateString()}
             </p>
             <p>
-              <strong>Bitiş Tarihi:</strong> {newPolicy.bitisTarihi}{" "}
+              <strong>Bitiş Tarihi:</strong>{" "}
+              {new Date(newPolicy.bitisTarihi).toLocaleDateString()}{" "}
             </p>
           </>
         );
@@ -135,11 +247,11 @@ export default function CreatePolicy() {
   // Teklif Alma İşlemi
   const handleSubmit = async (values) => {
     console.log("Form values:", values);
-
+    console.log("selected product", selectedProduct);
     try {
       setFormData(values);
 
-      // Kasko ve Prim Hesaplanır
+      // Kasko ve Prim Hesaplama
       if (selectedProduct === "310" || selectedProduct === "340") {
         const car = carData.find((car) => selectedCarId === car._id);
         if (car) {
@@ -151,16 +263,51 @@ export default function CreatePolicy() {
           formikKaskoTrafik.resetForm();
         }
       } else if (selectedProduct === "199") {
-        const primDask = values.binaMetreKare * 10;
+        const { hasarDurumu, insaYili, binaMetreKare, binaKat } = values;
+
+        const primDask = calculateDaskOffer(
+          insaYili,
+          binaKat,
+          binaMetreKare,
+          hasarDurumu
+        );
+
         setOfferAmount(primDask);
         setIsModalOpen(false);
         setIsOfferModalOpen(true);
         formikDask.resetForm();
+      } else if (selectedProduct === "610") {
+        const primHealth = await calculateHealthOffer(values);
+        console.log("selected customer:", selectedCustomer);
+        setOfferAmount(primHealth);
+        setIsModalOpen(false);
+        setIsOfferModalOpen(true);
+        formikSaglik.resetForm();
       }
     } catch (error) {
       console.error("Error during form submission:", error);
     }
   };
+
+  const formikSaglik = useFormik({
+    initialValues: {
+      sigaraKullanimi: "",
+      alkolKullanimi: "",
+      sporYapma: "",
+      ameliyat: "",
+      kronikHastalik: "",
+      ilacKullanimi: "",
+    },
+    validationSchema: Yup.object({
+      sigaraKullanimi: Yup.string().required("Bu alan gereklidir."),
+      alkolKullanimi: Yup.string().required("Bu alan gereklidir."),
+      sporYapma: Yup.string().required("Bu alan gereklidir."),
+      ameliyat: Yup.string().required("Bu alan gereklidir."),
+      kronikHastalik: Yup.string().required("Bu alan gereklidir."),
+      ilacKullanimi: Yup.string().required("Bu alan gereklidir."),
+    }),
+    onSubmit: handleSubmit,
+  });
 
   const formikDask = useFormik({
     initialValues: {
@@ -188,6 +335,10 @@ export default function CreatePolicy() {
         .integer("İnşa yılı geçerli bir yıl olmalıdır.")
         .min(1000, "İnşa yılı 4 haneli olmalıdır.")
         .max(9999, "İnşa yılı 4 haneli olmalıdır.")
+        .test("not-future", "Geçerli bir inşa yılı giriniz.", (value) => {
+          const currentUser = new Date().getFullYear();
+          return value <= currentUser;
+        })
         .required("İnşa yılı gereklidir."),
       hasarDurumu: Yup.string().required("Hasar durumu gereklidir."),
     }),
@@ -330,8 +481,13 @@ export default function CreatePolicy() {
     setShowPolicyDetails(false);
   };
 
+  const handleButtonClick = (field, value) => {
+    formikSaglik.setFieldValue(field, value);
+  };
+
   return (
     <div className={styles.container}>
+      <BackButton />
       {/* Ürün ve Müşteri Seçimi */}
       <div className={styles.selectRow}>
         <div className={styles.selectContainer}>
@@ -600,6 +756,7 @@ export default function CreatePolicy() {
                   type="number"
                   id="insaYili"
                   name="insaYili"
+                  maxLength="4"
                   value={formikDask.values.insaYili}
                   onChange={formikDask.handleChange}
                   onBlur={formikDask.handleBlur}
@@ -633,6 +790,181 @@ export default function CreatePolicy() {
               </div>
             </div>
             <button type="submit">Teklif Al</button>
+          </form>
+        </Modal>
+      )}
+      {/* Form Doldurma - SAĞLIK */}
+      {selectedProduct === "610" && (
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={() => handleCloseModal(formikDask.resetForm)}
+          className={styles.modal}
+          overlayClassName={styles.overlay}
+          contentLabel="Health Form Modal"
+        >
+          <form
+            onSubmit={formikSaglik.handleSubmit}
+            className={styles.healthForm}
+          >
+            <div className={styles.formRow}>
+              <label>Sigara içiyor mu?</label>
+              <div className={styles.buttonGroup}>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.sigaraKullanimi === "E"
+                      ? styles.activeYes
+                      : ""
+                  }`}
+                  onClick={() => handleButtonClick("sigaraKullanimi", "E")}
+                >
+                  E
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.sigaraKullanimi === "H"
+                      ? styles.activeNo
+                      : ""
+                  }`}
+                  onClick={() => handleButtonClick("sigaraKullanimi", "H")}
+                >
+                  H
+                </button>
+              </div>
+            </div>
+            <div className={styles.formRow}>
+              <label>Alkol kullanıyor mu?</label>
+              <div className={styles.buttonGroup}>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.alkolKullanimi === "E"
+                      ? styles.activeYes
+                      : ""
+                  }`}
+                  onClick={() => handleButtonClick("alkolKullanimi", "E")}
+                >
+                  E
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.alkolKullanimi === "H"
+                      ? styles.activeNo
+                      : ""
+                  }`}
+                  onClick={() => handleButtonClick("alkolKullanimi", "H")}
+                >
+                  H
+                </button>
+              </div>
+            </div>
+            <div className={styles.formRow}>
+              <label>Ameliyat geçirdi mi?</label>
+              <div className={styles.buttonGroup}>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.ameliyat === "E" ? styles.activeYes : ""
+                  }`}
+                  onClick={() => handleButtonClick("ameliyat", "E")}
+                >
+                  E
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.ameliyat === "H" ? styles.activeNo : ""
+                  }`}
+                  onClick={() => handleButtonClick("ameliyat", "H")}
+                >
+                  H
+                </button>
+              </div>
+            </div>
+            <div className={styles.formRow}>
+              <label>Spor yapıyor mu?</label>
+              <div className={styles.buttonGroup}>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.sporYapma === "E"
+                      ? styles.activeYes
+                      : ""
+                  }`}
+                  onClick={() => handleButtonClick("sporYapma", "E")}
+                >
+                  E
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.sporYapma === "H" ? styles.activeNo : ""
+                  }`}
+                  onClick={() => handleButtonClick("sporYapma", "H")}
+                >
+                  H
+                </button>
+              </div>
+            </div>
+            <div className={styles.formRow}>
+              <label>Kronik bir hastalığı var mı?</label>
+              <div className={styles.buttonGroup}>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.kronikHastalik === "E"
+                      ? styles.activeYes
+                      : ""
+                  }`}
+                  onClick={() => handleButtonClick("kronikHastalik", "E")}
+                >
+                  E
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.kronikHastalik === "H"
+                      ? styles.activeNo
+                      : ""
+                  }`}
+                  onClick={() => handleButtonClick("kronikHastalik", "H")}
+                >
+                  H
+                </button>
+              </div>
+            </div>
+            <div className={styles.formRow}>
+              <label>Düzenli kullandığı bir ilaç var mı?</label>
+              <div className={styles.buttonGroup}>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.ilacKullanimi === "E"
+                      ? styles.activeYes
+                      : ""
+                  }`}
+                  onClick={() => handleButtonClick("ilacKullanimi", "E")}
+                >
+                  E
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.optionButton} ${
+                    formikSaglik.values.ilacKullanimi === "H"
+                      ? styles.activeNo
+                      : ""
+                  }`}
+                  onClick={() => handleButtonClick("ilacKullanimi", "H")}
+                >
+                  H
+                </button>
+              </div>
+            </div>
+            <button type="submit" className={styles.submitButton}>
+              Teklif Al
+            </button>
           </form>
         </Modal>
       )}

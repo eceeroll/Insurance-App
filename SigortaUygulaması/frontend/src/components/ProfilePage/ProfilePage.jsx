@@ -1,7 +1,7 @@
 import styles from "./ProfilePage.module.css";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import BackButton from "../BackButton";
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
@@ -11,8 +11,6 @@ export default function ProfilePage() {
 
   const [userInfo, setUserInfo] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -66,9 +64,7 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.profileContainer}>
-      <button onClick={() => navigate(-1)} className={styles.backButton}>
-        Geri
-      </button>
+      <BackButton />
       <div className={styles.header}>
         <h1>Profil Bilgileri</h1>
       </div>

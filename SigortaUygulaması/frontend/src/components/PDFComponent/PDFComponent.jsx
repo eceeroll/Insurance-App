@@ -5,7 +5,7 @@ import styles from "./PDFComponent.module.css";
 import { formatDate } from "../../utils/formatDate";
 
 const PDFComponent = React.forwardRef(
-  ({ customerInfo, carInfo, policyInfo, bransKodu }, ref) => {
+  ({ customerInfo, carInfo, policyInfo, buildingInfo, bransKodu }, ref) => {
     return (
       <div ref={ref} className={styles.pdfContainer}>
         <div className={styles.header}>
@@ -46,6 +46,7 @@ const PDFComponent = React.forwardRef(
           </div>
         </div>
 
+        {/* kasko trafik için araç bilgileri göster */}
         {bransKodu === "310" || bransKodu === "340" ? (
           <>
             <div className={styles.subTitle}>Araç Bilgileri</div>
@@ -79,15 +80,42 @@ const PDFComponent = React.forwardRef(
           </>
         ) : null}
 
+        {/* dask için bina bilgileri göster */}
+        {bransKodu === "199" ? (
+          <>
+            <div className={styles.subTitle}>Bina Bilgileri</div>
+            <div className={styles.infoRow}>
+              <div className={styles.infoField}>
+                <span>UAVT Adres Kodu</span> {buildingInfo.uavtAdresKodu}
+              </div>
+              <div className={styles.infoField}>
+                <span>Bina Metre Kare</span> {buildingInfo.binaMetreKare}
+              </div>
+            </div>
+            <div className={styles.infoRow}>
+              <div className={styles.infoField}>
+                <span>Bina Kat Sayısı</span> {buildingInfo.binaKat}
+              </div>
+              <div className={styles.infoField}>
+                <span>Yapı Tarzı</span> {buildingInfo.yapiTarzi}
+              </div>
+            </div>
+            <div className={styles.infoField}>
+              <span>İnşa Yılı</span> {buildingInfo.insaYili}
+            </div>
+          </>
+        ) : null}
+
         <div className={styles.subTitle}>Poliçe Bilgileri</div>
         <div className={styles.infoRow}>
           <div className={styles.infoField}>
             <span>Poliçe No:</span> {policyInfo.policeNo}
           </div>
+          <div className={styles.infoField}>
+            <span>Prim:</span> {policyInfo.prim} TL
+          </div>
         </div>
-        <div className={styles.infoField}>
-          <span>Prim:</span> {policyInfo.prim} TL
-        </div>
+
         <div className={styles.infoRow}>
           <div className={styles.infoField}>
             <span>Tanzim Tarihi:</span> {formatDate(policyInfo.tanzimTarihi)}

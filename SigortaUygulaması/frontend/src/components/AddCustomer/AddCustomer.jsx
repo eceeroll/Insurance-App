@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import data from "../../il-ilceler-data.json";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./AddCustomer.module.css";
+import BackButton from "../BackButton";
 
 const AddCustomerSchema = Yup.object({
   tc_no: Yup.string()
@@ -111,13 +112,8 @@ export default function AddCustomer() {
 
   return (
     <div className={styles.container}>
-      <button
-        type="button"
-        className={styles.backButton}
-        onClick={() => navigate("/dashboard")}
-      >
-        Geri Dön
-      </button>
+      <BackButton />
+      <h1>Yeni Müşteri</h1>
       <form className={styles.addCustomerForm} onSubmit={formik.handleSubmit}>
         <div className={styles["form-row"]}>
           <div className={styles["form-group"]}>

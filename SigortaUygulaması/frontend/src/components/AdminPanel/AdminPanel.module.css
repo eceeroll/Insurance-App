@@ -3,26 +3,68 @@
   font-family: Arial, sans-serif;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.title {
-  flex: 1;
-  text-align: center;
-  font-size: 1.9rem;
-}
-
-.welcome {
+.profileMenu {
   position: absolute;
-  top: 22px;
-  right: -10%;
-  transform: translateX(-50%);
-  font-size: 0.9em;
-  font-weight: 600;
+  right: 15px;
+  top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  background-color: #219ebc;
+  padding: 10px;
+  color: #fff;
+  border-radius: 0.7rem;
+  font-size: 13px;
+}
+
+.profileInfo {
+  display: flex;
+  align-items: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.profileIcon {
+  margin-right: 5px;
+}
+
+.dropdownMenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 200px;
+  z-index: 1000;
+}
+
+.dropdownMenu.active {
+  display: block;
+}
+
+.dropdownMenu a,
+.dropdownMenu button {
+  display: block;
+  padding: 4px;
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.dropdownMenu a:hover,
+.dropdownMenu button:hover {
+  background-color: #f1f1f1;
+}
+
+/* Menü Sonu */
+.dropdownMenu button:last-child {
+  border-bottom: none;
+  background-color: red;
 }
 
 .buttonContainer {

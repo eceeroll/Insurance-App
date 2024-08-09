@@ -1,6 +1,6 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { FaInfoCircle } from "react-icons/fa";
+import { FaInfoCircle, FaUser } from "react-icons/fa";
 import DetailsModal from "../DetailsModal/DetailsModal";
 import axios from "axios";
 import styles from "./AdminPanel.module.css";
@@ -8,15 +8,15 @@ import { getProductTypeByBranchCode } from "../../utils/getProductTypeByBranchCo
 
 export default function AdminPanel() {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const token = localStorage.getItem("token");
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
-  const { firstName, lastName } = location.state;
   const [allCustomers, setAllCustomers] = useState([]);
   const [allPolicies, setAllPolicies] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchAllCustomers = async () => {
@@ -70,6 +70,19 @@ export default function AdminPanel() {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedItem(null);
+  };
+
+  const handleLogout = () => {
+    if (window.confirm("Emin misiniz?")) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("firstName");
+      localStorage.removeItem("lastName");
+      navigate("/login");
+    }
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
   // seçilen iteme göre modal render
@@ -161,18 +174,24 @@ export default function AdminPanel() {
 
   return (
     <div className={styles.adminPanel}>
-      <header className={styles.header}>
-        <div className={styles.welcome}>
-          {firstName} {lastName} (admin) olarak giriş yaptınız
+      <h1 style={{ fontSize: "2rem" }}>Admin Paneli</h1>
+      <div className={styles.profileMenu}>
+        <div className={styles.profileInfo} onClick={toggleMenu}>
+          <FaUser className={styles.profileIcon} size={20} />
+          {currentUser.firstName} {currentUser.lastName}
         </div>
-        <h1 className={styles.title}>Admin Paneli</h1>
-        <button
-          className={styles.logoutButton}
-          onClick={() => navigate("/login")}
+        <div
+          className={
+            isMenuOpen
+              ? `${styles.dropdownMenu} ${styles.active}`
+              : styles.dropdownMenu
+          }
         >
-          Çıkış Yap
-        </button>
-      </header>
+          <Link to="/profile">Profilim</Link>
+          <Link to="/sifre-yenile">Şifre Yenile</Link>
+          <button onClick={handleLogout}>Çıkış Yap</button>
+        </div>
+      </div>
 
       <div className={styles.buttonContainer}>
         <button

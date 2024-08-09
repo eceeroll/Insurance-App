@@ -6,6 +6,7 @@ import axios from "axios";
 import styles from "./SearchPolicy.module.css";
 import { ProductCodes } from "../../productCodes";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../BackButton";
 
 export default function SearchPolicy() {
   const token = localStorage.getItem("token");
@@ -18,7 +19,6 @@ export default function SearchPolicy() {
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [productTypes, setProductTypes] = useState([]);
   const [selectedProductType, setSelectedProductType] = useState("");
-  const [isPdfHidden, setIsPdfHidden] = useState(false);
   const [customerDetails, setCustomerDetails] = useState(null);
   const [carDetails, setCarDetails] = useState(null);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
@@ -100,10 +100,6 @@ export default function SearchPolicy() {
 
   // pdf oluştur
   const generatePDF = async (policy) => {
-    setTimeout(() => {
-      setIsPdfHidden(true);
-    }, 100);
-
     if (!policy) {
       console.error("Policy not provided");
       return;
@@ -198,6 +194,7 @@ export default function SearchPolicy() {
 
   return (
     <div className={styles.searchPolicy}>
+      <BackButton />
       <h1 className={styles.title}>Poliçe Ara</h1>
       <div className={styles.filters}>
         <input
@@ -298,11 +295,7 @@ export default function SearchPolicy() {
         </table>
       </div>
       {selectedPolicy && customerDetails && (
-        <div
-          className={
-            isPdfHidden ? `${styles.pdfdiv} ${styles.hidden}` : styles.pdfdiv
-          }
-        >
+        <div className={styles.pdfContainer}>
           <PDFComponent
             ref={pdfContentRef}
             carInfo={carDetails}

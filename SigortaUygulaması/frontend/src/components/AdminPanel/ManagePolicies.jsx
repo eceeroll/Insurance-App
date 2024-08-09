@@ -4,6 +4,7 @@ import DetailsModal from "../DetailsModal/DetailsModal";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { getProductTypeByBranchCode } from "../../utils/getProductTypeByBranchCode";
+import BackButton from "../BackButton";
 
 export default function ManagePolicies() {
   const token = localStorage.getItem("token");
@@ -229,7 +230,7 @@ export default function ManagePolicies() {
   return (
     <div className={styles.managePolicies}>
       <h1>Teklifleri Yönet</h1>
-
+      <BackButton />
       <div className={styles.controls}>
         <input
           type="text"
