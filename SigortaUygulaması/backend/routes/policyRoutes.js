@@ -16,6 +16,8 @@ router.put(
   policyController.updatePolicyStatus
 );
 
+router.put("/update/:id", isAuthenticated, policyController.updatePolicy);
+
 // ID ile Poliçe Bul
 router.get("/policeler/:id", isAuthenticated, policyController.findPolicyBydId);
 

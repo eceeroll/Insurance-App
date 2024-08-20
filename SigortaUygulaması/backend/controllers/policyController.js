@@ -180,6 +180,28 @@ exports.getAllPolicies = async (req, res) => {
   }
 };
 
+exports.updatePolicy = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updateData = req.body;
+    const updatedPolicy = await Policy.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    if (!updatedPolicy) {
+      return res.status(404).json({ message: "Poliçe Bulunamadı" });
+    }
+
+    res.json({
+      message: "Poliçe güncellendi",
+      updatedPolicy,
+    });
+  } catch (error) {
+    console.error("Güncelleme hatası:", error);
+    res.status(500).json({ message: "Sunucu Hatası" });
+  }
+};
+
 // DELETE POLICY
 exports.deletePolicy = async (req, res) => {
   try {

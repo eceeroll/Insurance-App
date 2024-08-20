@@ -73,13 +73,14 @@
 .menu {
   display: flex;
   justify-content: space-between;
+  gap: 8px;
   background: #f8f9fa;
   padding: 6px;
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-.menu button {
+/* .menu button {
   background: #007bff;
   color: #ffffff;
   border: none;
@@ -106,6 +107,32 @@
 .menu button:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+} */
+
+.menu button {
+  background: linear-gradient(135deg, #219ebc, #023047);
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 15px 30px;
+  margin-bottom: 15px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.4s, transform 0.3s, box-shadow 0.4s;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.menu button:hover {
+  background: linear-gradient(135deg, #197a99, #022634);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.menu button:active {
+  background: linear-gradient(135deg, #022634, #197a99);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
 }
 
 .tablesContainer {

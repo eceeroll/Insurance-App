@@ -69,6 +69,7 @@ export default function CreatePolicy() {
     return 500; // 50 yaş ve üstü için ek prim
   };
 
+  // sağlık tutarı hesapla
   const calculateHealthOffer = async (values) => {
     // önce müşterinin yaşı hesaplanır
     const customerData = await fetchCustomerData(selectedCustomer);
@@ -118,6 +119,7 @@ export default function CreatePolicy() {
     return kaskoTutari;
   };
 
+  // dask tutarı hesapla
   const calculateDaskOffer = (
     insaYili,
     binaKat,
@@ -135,9 +137,9 @@ export default function CreatePolicy() {
 
     // her yıl için yüzde 5 indirim
     const insaYiliKatsayi = 0.05;
-    // metre kare başına 50
+    // metre kare başına 10
     const metreKareKatsayi = 10;
-    // kat başına 500
+    // kat başına 200
     const binaKatKatsayi = 200;
     // hasarlı veya çok hasarlı için indirim
     const hasarDurumuKatsayi = hasarIndirimleri[hasarDurumu] || 0;
@@ -246,8 +248,6 @@ export default function CreatePolicy() {
 
   // Teklif Alma İşlemi
   const handleSubmit = async (values) => {
-    console.log("Form values:", values);
-    console.log("selected product", selectedProduct);
     try {
       setFormData(values);
 

@@ -36,8 +36,26 @@ const PaymentPage = () => {
   const prim = searchParams.get("prim");
 
   // Ödeme işlemi başarılı olduğunda
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
     setModalIsOpen(true);
+    const currentDate = new Date().toISOString();
+
+    // tanzim tarihini güncelle
+    const response = await axios.put(
+      `http://localhost:5000/api/policy/update/${policyId}`,
+      {
+        baslangicTarihi: currentDate,
+        // bitiş tarihi 1 yıl sonra
+        bitisTarihi: currentDate.setFullYear(currentDate.getFullYear() + 1),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("ödeme başarılı:", response);
   };
 
   // ödeme başarılı modal i kapatılır
