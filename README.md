@@ -47,21 +47,21 @@ Bu proje, kullanıcıların sigorta işlemlerini yönetmelerine olanak tanıyan 
    cd sigortacilik-uygulamasi
 
 
-2. **Backend Kurulumu"":
+2. **Backend Kurulumu**:
    ```bash
    cd backend
    npm install
    npm start
    ```
 
-4. **Frontend Kurulumu:"
+4. **Frontend Kurulumu**:
    ```bash
    cd frontend
    npm install
    npm run dev
    ```
 
-5. Veritabanınızı başlatın.
+5. **Veritabanınızı başlatın.**
    ```bash
    mongod
    ```
