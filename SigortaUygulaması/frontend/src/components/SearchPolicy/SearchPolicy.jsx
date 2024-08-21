@@ -85,7 +85,7 @@ export default function SearchPolicy() {
     filtered.sort((a, b) => {
       const dateA = new Date(a.tanzimTarihi);
       const dateB = new Date(b.tanzimTarihi);
-      return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+      return sortOrder === "newest" ? dateA - dateB : dateB - dateA;
     });
 
     setFilteredPolicies(filtered);

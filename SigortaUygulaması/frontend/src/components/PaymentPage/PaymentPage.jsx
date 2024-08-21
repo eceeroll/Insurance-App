@@ -38,7 +38,9 @@ const PaymentPage = () => {
   // Ödeme işlemi başarılı olduğunda
   const handlePaymentSuccess = async () => {
     setModalIsOpen(true);
-    const currentDate = new Date().toISOString();
+    const currentDate = new Date();
+    const bitisTarihi = new Date(currentDate);
+    bitisTarihi.setFullYear(bitisTarihi.getFullYear() + 1);
 
     // tanzim tarihini güncelle
     const response = await axios.put(
@@ -46,7 +48,7 @@ const PaymentPage = () => {
       {
         baslangicTarihi: currentDate,
         // bitiş tarihi 1 yıl sonra
-        bitisTarihi: currentDate.setFullYear(currentDate.getFullYear() + 1),
+        bitisTarihi: bitisTarihi,
       },
       {
         headers: {

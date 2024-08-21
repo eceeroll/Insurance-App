@@ -5,6 +5,7 @@ import DetailsModal from "../DetailsModal/DetailsModal";
 import axios from "axios";
 import styles from "./AdminPanel.module.css";
 import { getProductTypeByBranchCode } from "../../utils/getProductTypeByBranchCode";
+import Logo from "../Logo";
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -46,7 +47,11 @@ export default function AdminPanel() {
           }
         );
 
-        setAllPolicies(response.data);
+        const sortedPolicies = response.data.sort(
+          (a, b) => new Date(b.tanzimTarihi) - new Date(a.tanzimTarihi)
+        );
+
+        setAllPolicies(sortedPolicies);
       } catch (error) {
         console.error(error);
       }
@@ -174,6 +179,7 @@ export default function AdminPanel() {
 
   return (
     <div className={styles.adminPanel}>
+      <Logo />
       <h1 style={{ fontSize: "2rem" }}>Admin Paneli</h1>
       <div className={styles.profileMenu}>
         <div className={styles.profileInfo} onClick={toggleMenu}>

@@ -102,8 +102,9 @@
 
 .table td {
   text-align: center;
+  font-weight: 500;
   padding: 4px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .table thead {

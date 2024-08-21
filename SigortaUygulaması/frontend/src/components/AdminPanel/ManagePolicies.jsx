@@ -56,11 +56,11 @@ export default function ManagePolicies() {
     }
     if (sortOrder === "asc") {
       policies.sort(
-        (a, b) => new Date(a.baslangicTarihi) - new Date(b.baslangicTarihi)
+        (a, b) => new Date(a.tanzimTarihi) - new Date(b.tanzimTarihi)
       );
     } else {
       policies.sort(
-        (a, b) => new Date(b.baslangicTarihi) - new Date(a.baslangicTarihi)
+        (a, b) => new Date(b.tanzimTarihi) - new Date(a.tanzimTarihi)
       );
     }
     setFilteredPolicies(policies);
@@ -86,10 +86,12 @@ export default function ManagePolicies() {
     setSortOrder(event.target.value);
   };
 
-  const handleDeletePolicy = async (id) => {
+  const handleDeletePolicy = async (policy) => {
+    const policyId = policy._id;
+
     try {
       const confirmDelete = window.confirm(
-        `${id} ID'li Poliçe Silinecektir. Devam etmek istiyor musunuz?`
+        `${policy.policeNo} Numaralı Poliçe Silinecektir. Devam etmek istiyor musunuz?`
       );
 
       if (!confirmDelete) {
@@ -97,7 +99,7 @@ export default function ManagePolicies() {
       }
 
       const response = await axios.delete(
-        `http://localhost:5000/admin/policies/${id}`,
+        `http://localhost:5000/admin/policies/${policyId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -108,7 +110,7 @@ export default function ManagePolicies() {
       if (response.status === 200) {
         alert("Poliçe Silindi");
         setFilteredPolicies(
-          filteredPolicies.filter((policy) => policy._id !== id)
+          filteredPolicies.filter((policy) => policy._id !== policyId)
         );
       } else {
         alert("Bir hata oluştu");
@@ -280,7 +282,7 @@ export default function ManagePolicies() {
               <td>{getProductTypeByBranchCode(policy.bransKodu)}</td>
               <td>{policy.policeNo}</td>
               <td>{policy.musteriBilgileri.musteriNumarasi}</td>
-              <td>{new Date(policy.baslangicTarihi).toLocaleDateString()}</td>
+              <td>{new Date(policy.tanzimTarihi).toLocaleDateString()}</td>
               <td>{policy.status === "T" ? "Teklif" : "Kayıt"}</td>
               <td>
                 <button
@@ -290,7 +292,7 @@ export default function ManagePolicies() {
                   Detaylar
                 </button>
                 <button
-                  onClick={() => handleDeletePolicy(policy._id)}
+                  onClick={() => handleDeletePolicy(policy)}
                   className={styles.deleteButton}
                 >
                   Sil

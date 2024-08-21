@@ -110,15 +110,20 @@ export default function SearchCustomer() {
     }
   };
 
-  const handleDelete = async (musteriNo) => {
+  const handleDelete = async (customer) => {
+    console.log("musteri", customer);
+    const customerId = customer._id;
+    console.log("customerId:", customerId);
     const confirmDelete = window.confirm(
-      `${musteriNo} nolu müşteri silinecektir. Devam etmek istiyor musunuz?`
+      `${customer.musteri_no} nolu müşteri silinecektir. Devam etmek istiyor musunuz?`
     );
     if (!confirmDelete) return;
 
     try {
+      console.log("selected cust:", selectedCustomer);
+
       const response = await axios.delete(
-        `http://localhost:5000/api/customers/musteri-ara/${customerId}`,
+        `http://localhost:5000/api/customers/musteri-ara/${customer._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -210,9 +215,12 @@ export default function SearchCustomer() {
     console.log("dkd");
   };
 
-  const handleDeletePolicy = async (policyId) => {
+  const handleDeletePolicy = async (policy) => {
+    const policyId = policy._id;
+    const policeNo = policy.policeNo;
+
     const confirmDelete = window.confirm(
-      `${policyId} id'li poliçe silinecektir. Devam etmek istiyor musunuz?`
+      `${policeNo} numaralı poliçe silinecektir. Devam etmek istiyor musunuz?`
     );
     if (!confirmDelete) return;
 
@@ -405,7 +413,7 @@ export default function SearchCustomer() {
               <th>İsim</th>
               <th>Soyisim</th>
               <th>TC Kimlik No</th>
-              <th>Teklifler</th>
+              <th>İşlemler</th>
             </tr>
           </thead>
           <tbody>
@@ -419,7 +427,7 @@ export default function SearchCustomer() {
                   <button onClick={() => handleEdit(customer)}>Düzenle</button>
                   <button
                     style={{ backgroundColor: "red" }}
-                    onClick={() => handleDelete(customer.musteri_no)}
+                    onClick={() => handleDelete(customer)}
                   >
                     Sil
                   </button>
@@ -580,7 +588,7 @@ export default function SearchCustomer() {
 
                     {policy.status === "T" ? (
                       <button
-                        onClick={() => handleDeletePolicy(policy._id)}
+                        onClick={() => handleDeletePolicy(policy)}
                         style={{
                           padding: "3px 6px",
                           fontSize: "0.8rem",

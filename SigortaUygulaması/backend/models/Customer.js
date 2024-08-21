@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const CustomerSchema = new mongoose.Schema(
   {
     musteri_no: { type: String, required: true, unique: true },
-    tc_no: { type: String, required: true, unique: true },
+    tc_no: { type: String, required: true },
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },
     province: { type: String, required: true },
@@ -20,6 +20,7 @@ const CustomerSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// bir kullanıcı birden fazla aynı tc li müşteriye sahip olamaz
 CustomerSchema.index({ tc_no: 1, "addedBy.id": 1 }, { unique: true });
 
 module.exports = mongoose.model("Customer", CustomerSchema);

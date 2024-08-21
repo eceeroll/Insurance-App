@@ -1,15 +1,18 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-
+import { getProductTypeByBranchCode } from "../../utils/getProductTypeByBranchCode";
 import styles from "./PDFComponent.module.css";
 import { formatDate } from "../../utils/formatDate";
 
 const PDFComponent = React.forwardRef(
   ({ customerInfo, carInfo, policyInfo, buildingInfo, bransKodu }, ref) => {
+    const policyTitle = getProductTypeByBranchCode(bransKodu);
+    console.log("title:", policyTitle);
+
     return (
       <div ref={ref} className={styles.pdfContainer}>
         <div className={styles.header}>
-          <h1>Poliçe Bilgileri</h1>
+          <h1>{policyTitle} Poliçesi</h1>
         </div>
 
         <div className={styles.subTitle}>Müşteri Bilgileri</div>

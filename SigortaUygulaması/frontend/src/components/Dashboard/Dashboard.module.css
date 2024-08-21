@@ -64,7 +64,6 @@
   background-color: #f1f1f1;
 }
 
-/* Menü Sonu */
 .dropdownMenu button:last-child {
   border-bottom: none;
   background-color: red;
@@ -79,35 +78,6 @@
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
-
-/* .menu button {
-  background: #007bff;
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 25px;
-  margin: 0 10px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
-  font-family: Arial, sans-serif;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.menu button:hover {
-  background: #0056b3;
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-}
-
-.menu button:active {
-  background: #003d7a;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-.menu button:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
-} */
 
 .menu button {
   background: linear-gradient(135deg, #219ebc, #023047);
@@ -145,9 +115,10 @@
 }
 
 .tableSection {
-  width: 50%;
+  width: 48%;
   margin-bottom: 20px;
   overflow-x: auto;
+  margin-right: 0.1rem;
 }
 
 table {
@@ -155,7 +126,7 @@ table {
   border-collapse: collapse;
   margin-top: 10px;
   overflow-x: auto;
-  padding: 0;
+  padding: 10px;
 }
 
 table,
@@ -176,8 +147,9 @@ td {
 .tableButton {
   width: 100px;
   cursor: pointer;
-  font-size: 12px;
-  padding: 3px;
+  font-size: 14px;
+  border-radius: 6px;
+  padding: 6px 11px;
   background-color: #45b579;
   color: #fff;
   text-decoration: none;

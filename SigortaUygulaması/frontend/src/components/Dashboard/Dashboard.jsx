@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { FaUser } from "react-icons/fa"; // Profil ikonu
-
+import { FaInfoCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import styles from "./Dashboard.module.css";
 import { useEffect, useState, useRef } from "react";
@@ -9,6 +9,8 @@ import axios from "axios";
 import PDFComponent from "../PDFComponent/PDFComponent";
 import { Link } from "react-router-dom";
 import { getProductTypeByBranchCode } from "../../utils/getProductTypeByBranchCode";
+import Logo from "../Logo";
+import DetailsModal from "../DetailsModal/DetailsModal";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -22,6 +24,8 @@ export default function Dashboard() {
   const [carDetails, setCarDetails] = useState(null);
   const [customerDetails, setCustomerDetails] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const pdfContentRef = useRef(null);
 
@@ -39,7 +43,13 @@ export default function Dashboard() {
         setAllPolicies(response.data);
 
         // Status T olan poliçeleri filtrele
-        const pending = response.data.filter((policy) => policy.status === "T");
+        const pending = response.data
+          .filter((policy) => policy.status === "T")
+          .sort(
+            (a, b) =>
+              calculateTimeDifference(a.bitisTarihi) -
+              calculateTimeDifference(b.bitisTarihi)
+          );
         // Status K olan poliçeleri filtrele
         const processed = response.data.filter(
           (policy) => policy.status === "K"
@@ -54,6 +64,13 @@ export default function Dashboard() {
 
     fetchAllPolicies();
   }, [token]);
+
+  // Kalan süreyi milisaniye olarak hesaplayan yardımcı fonksiyon (Sıralama için kullanılıyor)
+  function calculateTimeDifference(endDate) {
+    const now = new Date();
+    const end = new Date(endDate);
+    return end - now; // milliseconds
+  }
 
   const generatePDF = async (policy) => {
     if (!policy) {
@@ -97,8 +114,7 @@ export default function Dashboard() {
       html2canvas(input)
         .then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
-          console.log("Canvas dimensions:", canvas.width, canvas.height); // Boyutları kontrol et
-          console.log("Image data:", imgData); // Veri URL'sini kontrol et
+
           const pdf = new jsPDF("p", "mm", "a4");
 
           // Set font to Helvetica (a simple font)
@@ -157,9 +173,9 @@ export default function Dashboard() {
     }
   };
 
-  function calculateRemainingTime(endDate) {
+  function calculateRemainingTime(policy) {
     const now = new Date();
-    const end = new Date(endDate);
+    const end = new Date(policy.bitisTarihi);
     const timeDifference = end - now;
 
     if (timeDifference <= 0) {
@@ -178,8 +194,106 @@ export default function Dashboard() {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleInfoClick = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  // seçilen iteme göre modal render
+  const renderModalContent = () => {
+    if (!selectedItem) return null;
+
+    if (selectedItem.policeNo) {
+      // Poliçe detayları
+      return (
+        <div>
+          <h3>Poliçe Detayları</h3>
+          <p>
+            <strong>Poliçe No:</strong> {selectedItem.policeNo}
+          </p>
+          <p>
+            <strong>Poliçe Türü:</strong>{" "}
+            {getProductTypeByBranchCode(selectedItem.bransKodu)}
+          </p>
+          <p>
+            <strong>Oluşturan Kullanıcı:</strong>{" "}
+            {selectedItem.onaylayan.username}
+          </p>
+          <p>
+            <strong>Başlangıç Tarihi:</strong>{" "}
+            {new Date(selectedItem.baslangicTarihi).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Tanzim Tarihi:</strong>{" "}
+            {new Date(selectedItem.tanzimTarihi).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Bitiş Tarihi:</strong>{" "}
+            {new Date(selectedItem.bitisTarihi).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Müşteri No:</strong>{" "}
+            {selectedItem.musteriBilgileri.musteriNumarasi}
+          </p>
+          <p>
+            <strong>Müşteri Adı Soyadı:</strong>{" "}
+            {selectedItem.musteriBilgileri.musteriAd}{" "}
+            {selectedItem.musteriBilgileri.musteriSoyad}
+          </p>
+        </div>
+      );
+    } else {
+      // Müşteri detayları
+      return (
+        <div>
+          <h3>Müşteri Detayları</h3>
+          <p>
+            <strong>Müşteri Numarası:</strong> {selectedItem.musteri_no}
+          </p>
+          <p>
+            <strong>TC:</strong> {selectedItem.tc_no}
+          </p>
+          <p>
+            <strong>İsim:</strong> {selectedItem.first_name}
+          </p>
+          <p>
+            <strong>Soyisim:</strong> {selectedItem.last_name}
+          </p>
+          <p>
+            <strong>İl:</strong> {selectedItem.province}
+          </p>
+          <p>
+            <strong>İlçe:</strong>{" "}
+            {selectedItem.district.charAt(0).toUpperCase() +
+              selectedItem.district.slice(1).toLowerCase()}
+          </p>
+          <p>
+            <strong>Doğum Tarihi:</strong>{" "}
+            {new Date(selectedItem.date_of_birth).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Email:</strong> {selectedItem.email}
+          </p>
+          <p>
+            <strong>Telefon Numarası:</strong> {selectedItem.phone_number}
+          </p>
+          <p>
+            <strong>Oluşturan Kullanıcı:</strong>{" "}
+            {selectedItem.addedBy.username}
+          </p>
+        </div>
+      );
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  };
+
   return (
     <div className={styles.dashboard}>
+      <Logo />
       <div className={styles.profileMenu}>
         <div className={styles.profileInfo} onClick={toggleMenu}>
           <FaUser className={styles.profileIcon} size={20} />
@@ -230,17 +344,33 @@ export default function Dashboard() {
                   <td>{getProductTypeByBranchCode(policy.bransKodu)}</td>
                   <td>{policy.policeNo}</td>
                   <td>
-                    {policy.musteriBilgileri.musteriAd}{" "}
-                    {policy.musteriBilgileri.musteriSoyad}
+                    {policy.musteriBilgileri.musteriAd.charAt(0).toUpperCase() +
+                      policy.musteriBilgileri.musteriAd
+                        .slice(1)
+                        .toLowerCase()}{" "}
+                    {policy.musteriBilgileri.musteriSoyad
+                      .charAt(0)
+                      .toUpperCase() +
+                      policy.musteriBilgileri.musteriSoyad
+                        .slice(1)
+                        .toLowerCase()}
                   </td>
 
-                  <td>{calculateRemainingTime(policy.bitisTarihi)}</td>
+                  <td>{calculateRemainingTime(policy)}</td>
                   <td>
                     <Link
                       to={`/odeme-sayfasi?id=${policy._id}&prim=${policy.prim}`}
                       className={styles.tableButton}
                     >
                       Ödeme Yap
+                    </Link>
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    <Link
+                      onClick={() => handleInfoClick(policy)}
+                      className={styles.tableButton}
+                    >
+                      Detaylar
                     </Link>
                   </td>
                 </tr>
@@ -266,17 +396,25 @@ export default function Dashboard() {
                   <td>{getProductTypeByBranchCode(policy.bransKodu)}</td>
                   <td>{policy.policeNo}</td>
                   <td>
-                    {policy.musteriBilgileri.musteriAd}{" "}
-                    {policy.musteriBilgileri.musteriSoyad}
+                    {policy.musteriBilgileri.musteriAd.charAt(0).toUpperCase() +
+                      policy.musteriBilgileri.musteriAd
+                        .slice(1)
+                        .toLowerCase()}{" "}
+                    {policy.musteriBilgileri.musteriSoyad
+                      .charAt(0)
+                      .toUpperCase() +
+                      policy.musteriBilgileri.musteriSoyad
+                        .slice(1)
+                        .toLowerCase()}
                   </td>
-                  <td>{policy.musteriBilgileri.musteriNo}</td>
+                  <td>{policy.musteriBilgileri.musteriNumarasi}</td>
                   <td>
-                    <button
+                    <Link
                       className={styles.tableButton}
                       onClick={() => generatePDF(policy)}
                     >
                       PDF Oluştur
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               ))}
@@ -289,12 +427,18 @@ export default function Dashboard() {
           <PDFComponent
             ref={pdfContentRef}
             carInfo={carDetails}
+            buildingInfo={selectedPolicy.binaBilgileri}
             policyInfo={selectedPolicy}
             customerInfo={customerDetails}
             bransKodu={selectedPolicy.bransKodu}
           />
         </div>
       )}
+      <DetailsModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        content={renderModalContent()}
+      />
     </div>
   );
 }

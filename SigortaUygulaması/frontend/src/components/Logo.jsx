@@ -1,4 +1,4 @@
-import logo from "../assets/ada_sigorta_logo.png";
+import logo from "../assets/Screenshot_1.png";
 import styles from "./logo.module.css";
 
 const Logo = () => {

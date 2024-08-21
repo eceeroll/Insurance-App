@@ -278,7 +278,6 @@ export default function CreatePolicy() {
         formikDask.resetForm();
       } else if (selectedProduct === "610") {
         const primHealth = await calculateHealthOffer(values);
-        console.log("selected customer:", selectedCustomer);
         setOfferAmount(primHealth);
         setIsModalOpen(false);
         setIsOfferModalOpen(true);
@@ -488,6 +487,7 @@ export default function CreatePolicy() {
   return (
     <div className={styles.container}>
       <BackButton />
+      <h1>Yeni Poliçe</h1>
       {/* Ürün ve Müşteri Seçimi */}
       <div className={styles.selectRow}>
         <div className={styles.selectContainer}>
@@ -979,11 +979,17 @@ export default function CreatePolicy() {
         <div className={styles.offerContainer}>
           {(selectedProduct === "310" || selectedProduct === "340") && (
             <p className={styles.offerText}>
-              Kasko Değeri: <strong>{offerAmount} TL</strong>
+              Kasko Değeri:{" "}
+              <strong>
+                {new Intl.NumberFormat("tr-TR").format(kaskoValue)} TL
+              </strong>
             </p>
           )}
           <p className={styles.offerText}>
-            Poliçe Teklifi: <strong>{offerAmount} TL</strong>
+            Poliçe Teklifi:{" "}
+            <strong>
+              {new Intl.NumberFormat("tr-TR").format(offerAmount)} TL
+            </strong>
           </p>
 
           {buttonsVisible && (
